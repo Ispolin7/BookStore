@@ -1,0 +1,7 @@
+.vs
+/BookStore/bin
+/BookStore/obj
+/BookStore/Migrations
+/BookStoreTests/bin
+/BookStoreTests/obj
+
