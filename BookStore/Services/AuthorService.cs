@@ -1,5 +1,8 @@
 ﻿using BookStore.Controllers.ViewModels;
+using BookStore.DataAccess;
+using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +12,53 @@ namespace BookStore.Services
 {
     public class AuthorService : IAuthorService
     {
-        public Task<IEnumerable<AuthorViewModel>> AllAsync()
+        private readonly DbContext dbContext;
+        private readonly DbSet<Author> authors;
+
+        public AuthorService(BookStoreContext context)
         {
-            throw new NotImplementedException();
+            this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
+            this.authors = dbContext.Set<Author>();
         }
 
-        public Task<AuthorViewModel> GetAsync(Guid id)
+        public async Task<IEnumerable<Author>> AllAsync()
         {
-            throw new NotImplementedException();
+            return await this.authors.ToListAsync();
         }
 
-        public Task<bool> RemoveAsync(Guid id)
+        public async Task<Author> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await this.authors.Where(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<Guid> SaveAsync(AuthorViewModel entity)
+        public async Task<Guid> SaveAsync(Author author)
         {
-            throw new NotImplementedException();
+            await this.authors.AddAsync(author);
+            await this.dbContext.SaveChangesAsync();
+            return author.Id;
         }
 
-        public Task<bool> UpdateAsync(AuthorViewModel entity)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var author = await this.authors.FindAsync(id);
+            this.authors.Remove(author);
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateAsync(Author author)
+        {
+            var oldAuthor = await this.authors
+                .AsNoTracking()
+                .Where(a => a.Id == author.Id)
+                .FirstOrDefaultAsync();
+
+            oldAuthor.Name = author.Name;
+            oldAuthor.UpdatedAt = DateTime.UtcNow;
+
+            var result = this.authors.Update(oldAuthor);
+            await this.dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

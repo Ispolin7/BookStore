@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookStore.Services.Interfaces
+namespace BookStore.Controllers.ValidationModels
 {
-    public interface ILineItemService
+    public class OrderCreateModel
     {
     }
 }

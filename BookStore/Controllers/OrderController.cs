@@ -1,126 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BookStore.DataAccess;
+﻿using AutoMapper;
+using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
+using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BookStore.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/orders")]
+    [Produces("application/json")]
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly BookStoreContext _context;
+        private readonly IOrderService service;
+        private readonly IMapper mapper;
 
-        public OrderController(BookStoreContext context)
+        public OrderController(IOrderService orderService, IMapper mapper)
         {
-            _context = context;
+            this.service = orderService ?? throw new ArgumentNullException(nameof(service));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Order
+        // GET: api/orders
         [HttpGet]
-        public IEnumerable<OrderViewModel> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetOrders()
         {
-            return _context.Orders;
+            return Ok(await service.AllAsync());
         }
 
-        // GET: api/Order/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrder([FromRoute] Guid id)
+        // GET: api/orders/5
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult> GetOrder([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var order = await _context.Orders.FindAsync(id);
-
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(order);
+            return Ok(await service.GetAsync(id));
         }
 
-        // PUT: api/Order/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder([FromRoute] Guid id, [FromBody] OrderViewModel order)
+        // POST: api/orders
+        [HttpPost]
+        public async Task<ActionResult> PostOrder([FromBody] OrderCreateModel order)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var result = await service.SaveAsync(mapper.Map<Order>(order));
 
-            if (id != order.Id)
-            {
-                return BadRequest();
-            }
+            return CreatedAtAction("Getorder", new { id = result });
+        }
 
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+        // PUT: api/orders/5
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> PutOrder([FromRoute] Guid id, [FromBody] OrderUpdateModel order)
+        {
+            await service.UpdateAsync(mapper.Map<Order>(order));
             return NoContent();
         }
 
-        // POST: api/Order
-        [HttpPost]
-        public async Task<IActionResult> PostOrder([FromBody] OrderViewModel order)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
-        }
-
-        // DELETE: api/Order/5
-        [HttpDelete("{id}")]
+        // DELETE: api/orders/5
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteOrder([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-
-            return Ok(order);
-        }
-
-        private bool OrderExists(Guid id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
+            await this.service.RemoveAsync(id);
+            return NoContent();
         }
     }
 }

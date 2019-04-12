@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\ValidationModels\" />
     <Folder Include="Services\Models\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

@@ -1,126 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BookStore.DataAccess;
+﻿using AutoMapper;
+using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
+using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BookStore.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/reviews")]
+    [Produces("application/json")]
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly BookStoreContext _context;
+        private readonly IReviewService service;
+        private readonly IMapper mapper;
 
-        public ReviewController(BookStoreContext context)
+        public ReviewController(IReviewService reviewService, IMapper mapper)
         {
-            _context = context;
+            this.service = reviewService ?? throw new ArgumentNullException(nameof(service));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Review
+        // GET: api/reviews
         [HttpGet]
-        public IEnumerable<ReviewViewModel> GetReviews()
+        public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews()
         {
-            return _context.Reviews;
+            return Ok(await service.AllAsync());
         }
 
-        // GET: api/Review/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetReview([FromRoute] Guid id)
+        // GET: api/reviews/5
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult> GetReview([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var review = await _context.Reviews.FindAsync(id);
-
-            if (review == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(review);
+            return Ok(await service.GetAsync(id));
         }
 
-        // PUT: api/Review/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview([FromRoute] Guid id, [FromBody] ReviewViewModel review)
+        // POST: api/reviews
+        [HttpPost]
+        public async Task<ActionResult> PostReview([FromBody] ReviewCreateModel review)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var result = await service.SaveAsync(mapper.Map<Review>(review));
 
-            if (id != review.Id)
-            {
-                return BadRequest();
-            }
+            return CreatedAtAction("Getreview", new { id = result });
+        }
 
-            _context.Entry(review).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+        // PUT: api/reviews/5
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> PutReview([FromRoute] Guid id, [FromBody] ReviewUpdateModel review)
+        {
+            await service.UpdateAsync(mapper.Map<Review>(review));
             return NoContent();
         }
 
-        // POST: api/Review
-        [HttpPost]
-        public async Task<IActionResult> PostReview([FromBody] ReviewViewModel review)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReview", new { id = review.Id }, review);
-        }
-
-        // DELETE: api/Review/5
-        [HttpDelete("{id}")]
+        // DELETE: api/reviews/5
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteReview([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var review = await _context.Reviews.FindAsync(id);
-            if (review == null)
-            {
-                return NotFound();
-            }
-
-            _context.Reviews.Remove(review);
-            await _context.SaveChangesAsync();
-
-            return Ok(review);
-        }
-
-        private bool ReviewExists(Guid id)
-        {
-            return _context.Reviews.Any(e => e.Id == id);
+            await this.service.RemoveAsync(id);
+            return NoContent();
         }
     }
 }

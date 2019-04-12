@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.Services.Interfaces
 {
-    interface ICRUDService<T>
+    public interface ICRUDService<T>
     {
         Task<IEnumerable<T>> AllAsync();
         Task<T> GetAsync(Guid id);

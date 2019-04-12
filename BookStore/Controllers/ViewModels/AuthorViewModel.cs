@@ -13,7 +13,7 @@ namespace BookStore.Controllers.ViewModels
 
         public IEnumerable<BookViewModel> Books { get; set; }
 
-        public DateTime CreatedAT { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        //public DateTime CreatedAT { get; set; }
+        //public DateTime? UpdatedAt { get; set; }
     }
 }

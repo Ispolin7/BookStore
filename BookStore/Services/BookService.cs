@@ -1,4 +1,5 @@
 ﻿using BookStore.Controllers.ViewModels;
+using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,12 @@ namespace BookStore.Services
 {
     public class BookService : IBookService
     {
-        public Task<IEnumerable<BookViewModel>> AllAsync()
+        public Task<IEnumerable<Book>> AllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<BookViewModel> GetAsync(Guid id)
+        public Task<Book> GetAsync(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -24,12 +25,12 @@ namespace BookStore.Services
             throw new NotImplementedException();
         }
 
-        public Task<Guid> SaveAsync(BookViewModel entity)
+        public Task<Guid> SaveAsync(Book entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAsync(BookViewModel entity)
+        public Task<bool> UpdateAsync(Book entity)
         {
             throw new NotImplementedException();
         }

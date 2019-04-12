@@ -7,120 +7,64 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
+using BookStore.Services.Interfaces;
+using AutoMapper;
+using BookStore.Controllers.ViewModels;
+using BookStore.Controllers.ValidationModels;
 
 namespace BookStore.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/books")]
+    [Produces("application/json")]
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly BookStoreContext _context;
+        private readonly IBookService service;
+        private readonly IMapper mapper;
 
-        public BookController(BookStoreContext context)
+        public BookController(IBookService bookService, IMapper mapper)
         {
-            _context = context;
+            this.service = bookService ?? throw new ArgumentNullException(nameof(service));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Book
+        // GET: api/books
         [HttpGet]
-        public IEnumerable<BookViewModel> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookViewModel>>> Getbooks()
         {
-            return _context.Books;
+            return Ok(await service.AllAsync());
         }
 
-        // GET: api/Book/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBook([FromRoute] Guid id)
+        // GET: api/books/5
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult> GetBook([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(book);
+            return Ok(await service.GetAsync(id));
         }
 
-        // PUT: api/Book/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook([FromRoute] Guid id, [FromBody] BookViewModel book)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        // POST: api/books
+        [HttpPost]
+        public async Task<ActionResult> PostBook([FromBody] BookCreateModel book)
+        {           
+            var result = await service.SaveAsync(mapper.Map<Book>(book));
 
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
+            return CreatedAtAction("GetBook", new { id = result });
+        }
 
-            _context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+        // PUT: api/books/5
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> PutBook([FromRoute] Guid id, [FromBody] BookUpdateModel book)
+        {            
+            await service.UpdateAsync(mapper.Map<Book>(book));
             return NoContent();
         }
 
-        // POST: api/Book
-        [HttpPost]
-        public async Task<IActionResult> PostBook([FromBody] BookViewModel book)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
-        }
-
-        // DELETE: api/Book/5
-        [HttpDelete("{id}")]
+        // DELETE: api/books/5
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteBook([FromRoute] Guid id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-
-            return Ok(book);
-        }
-
-        private bool BookExists(Guid id)
-        {
-            return _context.Books.Any(e => e.Id == id);
+        {            
+            await this.service.RemoveAsync(id);
+            return NoContent();
         }
     }
 }

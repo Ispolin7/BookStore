@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Controllers.ViewModels;
+using BookStore.DataAccess.Models;
 
 namespace BookStore.Services.Interfaces
 {
-    interface IOrderService : ICRUDService<OrderViewModel>
+    public interface IOrderService : ICRUDService<Order>
     {
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BookStore.Controllers.ViewModels;
+using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,12 @@ namespace BookStore.Services
 {
     public class ReviewService : IReviewService
     {
-        public Task<IEnumerable<ReviewViewModel>> AllAsync()
+        public Task<IEnumerable<Review>> AllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ReviewViewModel> GetAsync(Guid id)
+        public Task<Review> GetAsync(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -24,12 +25,12 @@ namespace BookStore.Services
             throw new NotImplementedException();
         }
 
-        public Task<Guid> SaveAsync(ReviewViewModel entity)
+        public Task<Guid> SaveAsync(Review entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAsync(ReviewViewModel entity)
+        public Task<bool> UpdateAsync(Review entity)
         {
             throw new NotImplementedException();
         }
