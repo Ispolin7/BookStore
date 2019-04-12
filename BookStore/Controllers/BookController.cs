@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BookStore.DataAccess;
+﻿using AutoMapper;
+using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
-using AutoMapper;
-using BookStore.Controllers.ViewModels;
-using BookStore.Controllers.ValidationModels;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BookStore.Controllers
 {
@@ -32,23 +28,27 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookViewModel>>> Getbooks()
         {
-            return Ok(await service.AllAsync());
+            var collection = await service.AllAsync();
+            var mappedBooks = this.mapper.Map<BookViewModel[]>(collection);
+            return Ok(mappedBooks);
         }
 
         // GET: api/books/5
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult> GetBook([FromRoute] Guid id)
         {
-            return Ok(await service.GetAsync(id));
+            var book = await service.GetAsync(id);
+            var mappedBook = this.mapper.Map<BookViewModel>(book);
+            return Ok(mappedBook);
         }
 
         // POST: api/books
         [HttpPost]
         public async Task<ActionResult> PostBook([FromBody] BookCreateModel book)
         {           
-            var result = await service.SaveAsync(mapper.Map<Book>(book));
+            var id = await service.SaveAsync(mapper.Map<Book>(book));
 
-            return CreatedAtAction("GetBook", new { id = result });
+            return CreatedAtAction(nameof(GetBook), new { id }, null);
         }
 
         // PUT: api/books/5

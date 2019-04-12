@@ -1,6 +1,7 @@
-﻿using BookStore.Controllers.ViewModels;
+﻿using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +11,61 @@ namespace BookStore.Services
 {
     public class BookService : IBookService
     {
-        public Task<IEnumerable<Book>> AllAsync()
+        private readonly DbContext dbContext;
+        private readonly DbSet<Book> books;
+
+        public BookService(BookStoreContext context)
         {
-            throw new NotImplementedException();
+            this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
+            this.books = dbContext.Set<Book>();
         }
 
-        public Task<Book> GetAsync(Guid id)
+        public async Task<IEnumerable<Book>> AllAsync()
         {
-            throw new NotImplementedException();
+            return await this.books.ToListAsync();
         }
 
-        public Task<bool> RemoveAsync(Guid id)
+        public async Task<Guid> SaveAsync(Book book)
         {
-            throw new NotImplementedException();
+            await this.books.AddAsync(book);
+            await this.dbContext.SaveChangesAsync();
+            return book.Id;
         }
 
-        public Task<Guid> SaveAsync(Book entity)
+        public async Task<Book> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await this.books.Where(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<bool> UpdateAsync(Book entity)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var book = await this.books.FindAsync(id);
+            this.books.Remove(book);
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+
+        public async Task<bool> UpdateAsync(Book book)
+        {
+            var oldBook = await this.books
+                 .AsNoTracking()
+                 .Where(a => a.Id == book.Id)
+                 .FirstOrDefaultAsync();
+
+            oldBook.Title = book.Title;
+            oldBook.Description = book.Description;
+            oldBook.PublishedOn = book.PublishedOn;
+            oldBook.Publisher = book.Publisher;
+            oldBook.OrgPrice = book.OrgPrice;
+            oldBook.ActualPrice = book.ActualPrice;
+            oldBook.PromotionalText = book.PromotionalText;
+            oldBook.ImageUrl = book.ImageUrl;
+            oldBook.UpdatedAt = DateTime.Now;
+
+            var result = this.books.Update(oldBook);
+            await this.dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
