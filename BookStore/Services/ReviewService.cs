@@ -1,6 +1,7 @@
-﻿using BookStore.Controllers.ViewModels;
+﻿using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +11,56 @@ namespace BookStore.Services
 {
     public class ReviewService : IReviewService
     {
-        public Task<IEnumerable<Review>> AllAsync()
+        private readonly DbContext dbContext;
+        private readonly DbSet<Review> reviews;
+
+        public ReviewService(BookStoreContext context)
         {
-            throw new NotImplementedException();
+            this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
+            this.reviews = dbContext.Set<Review>();
         }
 
-        public Task<Review> GetAsync(Guid id)
+        public async Task<IEnumerable<Review>> AllAsync()
         {
-            throw new NotImplementedException();
+            return await this.reviews.ToListAsync();
         }
 
-        public Task<bool> RemoveAsync(Guid id)
+        public async Task<Review> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await this.reviews.Where(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<Guid> SaveAsync(Review entity)
+        public async Task<Guid> SaveAsync(Review review)
         {
-            throw new NotImplementedException();
+            await this.reviews.AddAsync(review);
+            await this.dbContext.SaveChangesAsync();
+            return review.Id;
         }
 
-        public Task<bool> UpdateAsync(Review entity)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var review = await this.reviews.FindAsync(id);
+            this.reviews.Remove(review);
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+
+        public async Task<bool> UpdateAsync(Review review)
+        {
+            var oldReview = await this.reviews
+                 .AsNoTracking()
+                 .Where(r => r.Id == review.Id)
+                 .FirstOrDefaultAsync();
+
+            oldReview.VoterName = review.VoterName;
+            oldReview.NumStars = review.NumStars;
+            oldReview.Comment = review.Comment;
+            oldReview.UpdatedAt = DateTime.Now;
+
+            var result = this.reviews.Update(oldReview);
+            await this.dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

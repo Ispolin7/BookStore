@@ -15,7 +15,7 @@ namespace BookStore.Controllers.ViewModels
 
         public string Comment { get; set; }
 
-        public BookViewModel Book { get; set; }
+        //public BookViewModel Book { get; set; }
         public Guid BookId { get; set; }
 
         //public DateTime CreatedAT { get; set; }

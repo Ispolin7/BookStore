@@ -28,23 +28,26 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews()
         {
-            return Ok(await service.AllAsync());
+            var collection = await service.AllAsync();
+            var mappedReview = this.mapper.Map<ReviewViewModel[]>(collection);
+            return Ok(mappedReview);
         }
 
         // GET: api/reviews/5
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult> GetReview([FromRoute] Guid id)
         {
-            return Ok(await service.GetAsync(id));
+            var review = await service.GetAsync(id);
+            var mappedReview = this.mapper.Map<ReviewViewModel>(review);
+            return Ok(mappedReview);
         }
 
         // POST: api/reviews
         [HttpPost]
         public async Task<ActionResult> PostReview([FromBody] ReviewCreateModel review)
         {
-            var result = await service.SaveAsync(mapper.Map<Review>(review));
-
-            return CreatedAtAction("Getreview", new { id = result });
+            var id = await service.SaveAsync(mapper.Map<Review>(review));
+            return CreatedAtAction(nameof(GetReview), new { id }, null);
         }
 
         // PUT: api/reviews/5

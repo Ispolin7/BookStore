@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace BookStore.Controllers.ValidationModels
 {
-    public class ReviewUpdateModel
+    public class ReviewUpdateModel : ReviewCreateModel
     {
+        public Guid Id { get; set; }
     }
 }
