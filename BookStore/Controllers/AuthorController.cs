@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;

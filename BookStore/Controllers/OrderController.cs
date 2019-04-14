@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
@@ -28,14 +28,18 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetOrders()
         {
-            return Ok(await service.AllAsync());
+            var collection = await service.AllAsync();
+            var mappedOrders = this.mapper.Map<OrderViewModel[]>(collection);
+            return Ok(mappedOrders);
         }
 
         // GET: api/orders/5
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult> GetOrder([FromRoute] Guid id)
         {
-            return Ok(await service.GetAsync(id));
+            var order = await service.GetAsync(id);
+            var mappedOrder = this.mapper.Map<OrderViewModel>(order);
+            return Ok(mappedOrder);
         }
 
         // POST: api/orders
@@ -44,7 +48,7 @@ namespace BookStore.Controllers
         {
             var result = await service.SaveAsync(mapper.Map<Order>(order));
 
-            return CreatedAtAction("Getorder", new { id = result });
+            return CreatedAtAction(nameof(GetOrder), new { id = result }, null);
         }
 
         // PUT: api/orders/5

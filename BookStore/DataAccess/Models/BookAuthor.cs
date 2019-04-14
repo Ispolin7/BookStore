@@ -13,6 +13,6 @@ namespace BookStore.DataAccess.Models
         public Guid AuthorId { get; set; }
         public Author Author { get; set; }
 
-        //public IEnumerable<Guid> Order { get; set; }
+        public int Order { get; set; }
     }
 }

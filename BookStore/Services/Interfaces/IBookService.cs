@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookStore.Controllers.ViewModels;
+﻿using BookStore.Controllers.RequestModels;
 using BookStore.DataAccess.Models;
+using System.Threading.Tasks;
 
 namespace BookStore.Services.Interfaces
 {
     public interface IBookService : ICRUDService<Book>
     {
+        Task<bool> UpdateAuthorsAsync(BookAuthors bookAuthors);
     }
 }

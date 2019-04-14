@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BookStore.Controllers.Filters;
 using BookStore.DataAccess;
+using BookStore.DataAccess.Models;
 using BookStore.Services;
 using BookStore.Services.Interfaces;
+using BookStore.Services.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +38,7 @@ namespace BookStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().AddFluentValidation();
             services.AddAutoMapper();
             // Add DB Context.
             services.AddDbContext<BookStoreContext>(options =>
@@ -45,6 +50,12 @@ namespace BookStore
             services.AddScoped<ILineItemService, LineItemService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IReviewService, ReviewService>();
+
+            // Add Validators.
+            services.AddScoped<IValidator<Author>, AuthorValidator>();
+            services.AddScoped<IValidator<Book>, BookValidator>();
+            services.AddScoped<IValidator<Order>, OrderValidator>();
+            services.AddScoped<IValidator<Review>, ReviewValidator>();
 
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc(options =>
@@ -67,7 +78,8 @@ namespace BookStore
                     {
                         exception.Message,
                         exception.Source,
-                        exception.StackTrace
+                        exception.StackTrace,
+                        exception.InnerException
                     });
                     context.Response.ContentType = "application/json";
                     context.Response.StatusCode = 400;

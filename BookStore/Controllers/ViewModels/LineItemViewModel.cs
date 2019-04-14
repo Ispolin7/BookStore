@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.Controllers.ViewModels
 {
@@ -18,7 +15,7 @@ namespace BookStore.Controllers.ViewModels
         public BookViewModel Book { get; set; }
         public Guid BookId { get; set; }
 
-        public OrderViewModel Order { get; set; }
+        //public OrderViewModel Order { get; set; }
         public Guid OrderId { get; set; }
 
         //public DateTime CreatedAT { get; set; }

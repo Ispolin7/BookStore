@@ -9,5 +9,6 @@ namespace BookStore.Services.Interfaces
 {
     public interface IReviewService : ICRUDService<Review>
     {
+        Task<IEnumerable<Review>> AllBookReviewsAsync(Guid bookId);
     }
 }

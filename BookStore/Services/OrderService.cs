@@ -1,6 +1,7 @@
-﻿using BookStore.Controllers.ViewModels;
+﻿using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +11,94 @@ namespace BookStore.Services
 {
     public class OrderService : IOrderService
     {
-        public Task<IEnumerable<Order>> AllAsync()
+        private readonly DbContext dbContext;
+        private readonly DbSet<Order> orders;
+        private readonly ILineItemService itemService;
+        private readonly int deliveryMargin = 3;
+
+        public OrderService(BookStoreContext context, ILineItemService service)
         {
-            throw new NotImplementedException();
+            this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
+            this.orders = dbContext.Set<Order>();
+            this.itemService = service ?? throw new ArgumentNullException(nameof(itemService));
         }
 
-        public Task<Order> GetAsync(Guid id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<Order>> AllAsync()
         {
-            throw new NotImplementedException();
+            return await this.orders
+                .Include(o => o.LineItems)
+                    .ThenInclude(i => i.Book)
+                .ToListAsync();
         }
 
-        public Task<bool> RemoveAsync(Guid id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<Order> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await this.orders
+                .Where(a => a.Id == id)
+                .Include(o => o.LineItems)
+                    .ThenInclude(i => i.Book)
+                .FirstOrDefaultAsync();
         }
 
-        public Task<Guid> SaveAsync(Order entity)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public async Task<Guid> SaveAsync(Order order)
         {
-            throw new NotImplementedException();
+            order.CreatedAT = DateTime.UtcNow;
+            order.ExpectedDeliveryDate = order.CreatedAT.AddDays(this.deliveryMargin);
+            // TODO auto generete id
+            order.Id = new Guid();
+            await this.orders.AddAsync(await this.itemService.CreateRangeAsync(order));
+            await this.dbContext.SaveChangesAsync();
+           
+            return order.Id;
         }
 
-        public Task<bool> UpdateAsync(Order entity)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var order = await this.orders.FindAsync(id);
+            this.orders.Remove(order);
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateAsync(Order order)
+        {
+            var oldOrder = await this.orders
+                 .AsNoTracking()
+                 .Where(o => o.Id == order.Id)
+                 .Include(o => o.LineItems)
+                 .FirstOrDefaultAsync();
+
+            oldOrder.CustomerName = order.CustomerName;
+            oldOrder.UpdatedAt = DateTime.Now;
+                      
+            var result = this.orders.Update(await this.itemService.UpdateRangeAsync(oldOrder, order));
+            await this.dbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }

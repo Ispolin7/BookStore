@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.DataAccess.Models
 {
-    public class LineItem : IEntity
+    public class LineItem
     {
         public Guid Id { get; set; }
 
@@ -21,7 +18,7 @@ namespace BookStore.DataAccess.Models
         public Order Order { get; set; }
         public Guid OrderId { get; set; }
 
-        public DateTime CreatedAT { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        //public DateTime CreatedAT { get; set; }
+        //public DateTime? UpdatedAt { get; set; }
     }
 }

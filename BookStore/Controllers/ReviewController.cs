@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.Controllers
 {
-    [Route("api/reviews")]
+    [Route("api/books/{bookId:Guid}/reviews")]
     [Produces("application/json")]
     [ApiController]
     public class ReviewController : ControllerBase
@@ -24,11 +24,12 @@ namespace BookStore.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        // TODO not found
         // GET: api/reviews
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews()
+        public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews([FromRoute] Guid bookId)
         {
-            var collection = await service.AllAsync();
+            var collection = await service.AllBookReviewsAsync(bookId);
             var mappedReview = this.mapper.Map<ReviewViewModel[]>(collection);
             return Ok(mappedReview);
         }
@@ -44,8 +45,9 @@ namespace BookStore.Controllers
 
         // POST: api/reviews
         [HttpPost]
-        public async Task<ActionResult> PostReview([FromBody] ReviewCreateModel review)
+        public async Task<ActionResult> PostReview([FromRoute] Guid bookId, [FromBody] ReviewCreateModel review)
         {
+            review.BookId = bookId;
             var id = await service.SaveAsync(mapper.Map<Review>(review));
             return CreatedAtAction(nameof(GetReview), new { id }, null);
         }
@@ -54,6 +56,7 @@ namespace BookStore.Controllers
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> PutReview([FromRoute] Guid id, [FromBody] ReviewUpdateModel review)
         {
+            review.Id = id;
             await service.UpdateAsync(mapper.Map<Review>(review));
             return NoContent();
         }

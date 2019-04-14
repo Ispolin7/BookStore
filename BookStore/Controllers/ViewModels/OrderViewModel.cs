@@ -12,7 +12,7 @@ namespace BookStore.Controllers.ViewModels
         public DateTime ExpectedDeliveryDate { get; set; }
 
         public string CustomerName { get; set; }
-        public IEnumerable<LineItemViewModel> LineItem { get; set; }
+        public IEnumerable<LineItemViewModel> LineItems { get; set; }
         //public DateTime CreatedAT { get; set; }
         //public DateTime? UpdatedAt { get; set; }
     }

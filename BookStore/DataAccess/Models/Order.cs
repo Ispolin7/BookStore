@@ -12,7 +12,7 @@ namespace BookStore.DataAccess.Models
         public DateTime ExpectedDeliveryDate { get; set; }
 
         public string CustomerName { get; set; }
-        public IEnumerable<LineItem> LineItem { get; set; }
+        public IEnumerable<LineItem> LineItems { get; set; }
 
         public DateTime CreatedAT { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -23,12 +23,19 @@ namespace BookStore.Services
 
         public async Task<IEnumerable<Author>> AllAsync()
         {
-            return await this.authors.ToListAsync();
+            return await this.authors
+                .Include(a => a.BookAuthors)
+                    .ThenInclude(ba => ba.Book)
+                .ToListAsync();
         }
 
         public async Task<Author> GetAsync(Guid id)
         {
-            return await this.authors.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return await this.authors
+                .Where(a => a.Id == id)
+                .Include(a => a.BookAuthors)
+                    .ThenInclude(ba => ba.Book)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Guid> SaveAsync(Author author)

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookStore.Controllers.ValidationModels;
+using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
@@ -64,6 +64,15 @@ namespace BookStore.Controllers
         public async Task<IActionResult> DeleteBook([FromRoute] Guid id)
         {            
             await this.service.RemoveAsync(id);
+            return NoContent();
+        }
+
+        
+        [HttpPut("{id:Guid}/authors")]
+        public async Task<IActionResult> UpdateAuthors([FromRoute] Guid id, [FromBody] BookAuthors bookAuthors)
+        {
+            bookAuthors.BookId = id;
+            await service.UpdateAuthorsAsync(bookAuthors);
             return NoContent();
         }
     }

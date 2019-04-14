@@ -1,10 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using BookStore.DataAccess.ModelsConfiguration;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.DataAccess
 {
@@ -22,10 +18,9 @@ namespace BookStore.DataAccess
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
 
-            //// add in db test values
-            //modelBuilder.Seed();
+            // Add in db test values.
+            modelBuilder.Seed();
         }
-
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
