@@ -26,7 +26,8 @@ namespace BookStoreTests.Services
             this.mockLineItemService = new Mock<ILineItemService>();           
             var contextBuilder = new TestDbContextBuilder();
             contextBuilder.FillDb(CollectionsFactory.GetOrdersCollection());
-            contextBuilder.FillDb(CollectionsFactory.GetLineItemsCollection());            
+            contextBuilder.FillDb(CollectionsFactory.GetLineItemsCollection());
+            contextBuilder.FillDb(CollectionsFactory.GetBooksCollection());
             this.dbContext = contextBuilder.BuildContext();
 
             //service = new OrderService(context, mockLineItemService.Object);
@@ -34,7 +35,10 @@ namespace BookStoreTests.Services
 
         private OrderService CreateService()
         {
-            return new OrderService(this.dbContext, this.mockLineItemService.Object);
+            return new OrderService(
+                this.dbContext, 
+                this.mockLineItemService.Object, 
+                new OrderValidator(this.dbContext));
         }
 
         [TestMethod]
@@ -109,7 +113,6 @@ namespace BookStoreTests.Services
             Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
         }
 
-        // TODO test false validation
         // TODO Exception The instance of entity type 'Order' cannot be tracked because another instance with the key value 
         [TestMethod]
         public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
@@ -143,14 +146,14 @@ namespace BookStoreTests.Services
                     new LineItem
                     {
                         NumBooks = 2,
-                        BookId = new Guid("9bab3e82-359c-4630-8604-08d6c0d5a2a0"),
+                        BookId = new Guid("3f27f7e7-fe64-4add-bb48-6ed5377b618f"),
                         LineNum = "123456",
                         BookPrice = 100
                     },
                     new LineItem
                     {
                         NumBooks = 1,
-                        BookId = new Guid("975ddfea-cc3b-4886-8605-08d6c0d5a2a0"),
+                        BookId = new Guid("c4b6769f-2d3e-427f-a65d-5dc4a0f28cdf"),
                         LineNum = "1234567",
                         BookPrice = 200
                     }
@@ -169,12 +172,12 @@ namespace BookStoreTests.Services
                     new LineItem
                     {
                         NumBooks = 2,
-                        BookId = new Guid("9bab3e82-359c-4630-8604-08d6c0d5a2a0")
+                        BookId = new Guid("3f27f7e7-fe64-4add-bb48-6ed5377b618f")
                     },
                     new LineItem
                     {
                         NumBooks = 1,
-                        BookId = new Guid("975ddfea-cc3b-4886-8605-08d6c0d5a2a0")
+                        BookId = new Guid("c4b6769f-2d3e-427f-a65d-5dc4a0f28cdf")
                     }
                 }
             };

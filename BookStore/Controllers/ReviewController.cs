@@ -24,7 +24,6 @@ namespace BookStore.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // TODO not found
         // GET: api/reviews
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews([FromRoute] Guid bookId)

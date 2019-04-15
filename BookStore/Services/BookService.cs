@@ -69,8 +69,7 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<Guid> SaveAsync(Book book)
         {
-            // TODO exception this.bookValidator.Validate(book).ThrowIfInvalid();
-
+            this.bookValidator.Validate(book).ThrowIfInvalid();
             await this.books.AddAsync(book);
             await this.dbContext.SaveChangesAsync();
             return book.Id;
@@ -97,7 +96,7 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<bool> UpdateAsync(Book book)
         {
-            // TODO exception this.bookValidator.Validate(book).ThrowIfInvalid();
+            this.bookValidator.Validate(book).ThrowIfInvalid();
 
             var oldBook = await this.books
                  //.AsNoTracking()
