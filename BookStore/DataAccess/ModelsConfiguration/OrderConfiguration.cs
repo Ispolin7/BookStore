@@ -13,7 +13,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<Order> builder)
         {
             builder.ToTable("Orders");
-
+            // TODO Order Model configuration
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }

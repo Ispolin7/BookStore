@@ -14,6 +14,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<BookAuthor> builder)
         {
             builder.ToTable("BookAuthors");
+            // TODO BookAuthor Model configuration
             builder.HasKey(ba => new { ba.BookId, ba.AuthorId });
             //builder.Property(ba => ba.Order).HasConversion(
 

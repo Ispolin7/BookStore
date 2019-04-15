@@ -111,18 +111,19 @@ namespace BookStore.DataAccess
             {
                 new Order
                 {
-                    Id = new Guid("2b14d5d3-4755-4d3b-993e-bbb1972c5d2e"),
+                    Id = new Guid("cc32fdc5-1847-423d-85a3-3b7a8b6d19b0"),
                     ExpectedDeliveryDate = DateTime.Now.AddDays(3),
                     CustomerName = "First Customer",
                     CreatedAT = DateTime.UtcNow
                 },
                 new Order
                 {
-                    Id = new Guid("cc32fdc5-1847-423d-85a3-3b7a8b6d19b0"),
+                    Id = new Guid("2b14d5d3-4755-4d3b-993e-bbb1972c5d2e"),
                     ExpectedDeliveryDate = DateTime.Now.AddDays(3),
                     CustomerName = "Second Customer",
                     CreatedAT = DateTime.UtcNow
                 }
+                
             };
         }
 

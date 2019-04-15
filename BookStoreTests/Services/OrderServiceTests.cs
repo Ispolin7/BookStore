@@ -2,113 +2,182 @@ using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services;
 using BookStore.Services.Interfaces;
+using BookStore.Services.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using WebApiYardTests;
 
 namespace BookStoreTests.Services
 {
     [TestClass]
     public class OrderServiceTests
     {
-        //private MockRepository mockRepository;
+        //private OrderService service;
+        private BookStoreContext dbContext;
+        private Mock<ILineItemService> mockLineItemService;
 
-        //private Mock<BookStoreContext> mockBookStoreContext;
-        //private Mock<ILineItemService> mockLineItemService;
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            this.mockLineItemService = new Mock<ILineItemService>();           
+            var contextBuilder = new TestDbContextBuilder();
+            contextBuilder.FillDb(CollectionsFactory.GetOrdersCollection());
+            contextBuilder.FillDb(CollectionsFactory.GetLineItemsCollection());            
+            this.dbContext = contextBuilder.BuildContext();
 
-        //[TestInitialize]
-        //public void TestInitialize()
-        //{
-        //    this.mockRepository = new MockRepository(MockBehavior.Strict);
+            //service = new OrderService(context, mockLineItemService.Object);
+        }
 
-        //    this.mockBookStoreContext = this.mockRepository.Create<BookStoreContext>();
-        //    this.mockLineItemService = this.mockRepository.Create<ILineItemService>();
-        //}
+        private OrderService CreateService()
+        {
+            return new OrderService(this.dbContext, this.mockLineItemService.Object);
+        }
 
-        //[TestCleanup]
-        //public void TestCleanup()
-        //{
-        //    this.mockRepository.VerifyAll();
-        //}
+        [TestMethod]
+        public async Task AllAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var service = this.CreateService();
+            var expectedCount = CollectionsFactory.GetOrdersCollection().Count();
 
-        //private OrderService CreateService()
-        //{
-        //    return new OrderService(
-        //        this.mockBookStoreContext.Object,
-        //        this.mockLineItemService.Object);
-        //}
+            // Act
+            var result = await service.AllAsync();
+            var realCount = result.Count();
 
-        //[TestMethod]
-        //public async Task AllAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
+            // Assert
+            Assert.AreEqual(realCount, expectedCount, $"Expected - {expectedCount}, real - {realCount}");
+        }
 
-        //    // Act
-        //    var result = await unitUnderTest.AllAsync();
+        [TestMethod]
+        public async Task GetAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var service = this.CreateService();
+            var testOrder = CollectionsFactory.GetOrdersCollection().First();
+            var expectedLineItems = CollectionsFactory.GetLineItemsCollection()
+                .Where(i => i.OrderId == testOrder.Id)
+                .Count();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Act
+            var result = await service.GetAsync(testOrder.Id);
+            var realLineItems = result.LineItems.Count();
 
-        //[TestMethod]
-        //public async Task GetAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+            // Assert
+            Assert.AreEqual(expectedLineItems, realLineItems, $"Expected - {expectedLineItems} LineItems, real - {realLineItems}");
+        }
 
-        //    // Act
-        //    var result = await unitUnderTest.GetAsync(
-        //        id);
+        // TODO add test false validation
+        [TestMethod]
+        public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var order = GetOrder();
+            var mockedOrder = GetMockedOrder();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            mockLineItemService.Setup(s => s.CreateRangeAsync(It.IsAny<Order>())).Returns(Task.FromResult(mockedOrder));
+            var service = this.CreateService();
+            var beforeOrders = await service.AllAsync();
+            var expectedOrderCount = beforeOrders.Count() + 1;
 
-        //[TestMethod]
-        //public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Order order = TODO;
+            // Act
+            var result = await service.SaveAsync(order);
+            var afterOrders = await service.AllAsync();
+            var afterOrderCount = afterOrders.Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.SaveAsync(
-        //        order);
+            // Assert
+            Assert.AreEqual(expectedOrderCount, afterOrderCount, $"Expected - {expectedOrderCount} LineItems, real - {afterOrderCount}");
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        [TestMethod]
+        public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var service = this.CreateService();
+            var expectedCount = CollectionsFactory.GetOrdersCollection().Count() - 1;
+            var testOrder = CollectionsFactory.GetOrdersCollection().First();
 
-        //[TestMethod]
-        //public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+            // Act
+            var result = await service.RemoveAsync(testOrder.Id);
+            var newOrderCollection = await service.AllAsync();
+            var newCount = newOrderCollection.Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.RemoveAsync(
-        //        id);
+            // Assert
+            Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        // TODO test false validation
+        // TODO Exception The instance of entity type 'Order' cannot be tracked because another instance with the key value 
+        [TestMethod]
+        public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var order = GetOrder();
+            order.Id = CollectionsFactory.GetOrdersCollection().First().Id;
 
-        //[TestMethod]
-        //public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Order order = TODO;
+            var mockedOrder = GetMockedOrder();
+            mockedOrder.Id = order.Id;
+            mockLineItemService
+                .Setup(s => s.UpdateRangeAsync(It.IsAny<Order>(), It.IsAny<Order>()))
+                .Returns(Task.FromResult(mockedOrder));
 
-        //    // Act
-        //    var result = await unitUnderTest.UpdateAsync(
-        //        order);
+            var service = CreateService();
+            // Act
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            var result = await service.UpdateAsync(order);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        public Order GetMockedOrder()
+        {
+            return new Order
+            {
+                CustomerName = "Test Customer",
+                LineItems = new List<LineItem>
+                {
+                    new LineItem
+                    {
+                        NumBooks = 2,
+                        BookId = new Guid("9bab3e82-359c-4630-8604-08d6c0d5a2a0"),
+                        LineNum = "123456",
+                        BookPrice = 100
+                    },
+                    new LineItem
+                    {
+                        NumBooks = 1,
+                        BookId = new Guid("975ddfea-cc3b-4886-8605-08d6c0d5a2a0"),
+                        LineNum = "1234567",
+                        BookPrice = 200
+                    }
+                },
+                CreatedAT = DateTime.UtcNow
+            };
+        }
+
+        public Order GetOrder()
+        {
+            return new Order
+            {
+                CustomerName = "Test Customer",
+                LineItems = new List<LineItem>
+                {
+                    new LineItem
+                    {
+                        NumBooks = 2,
+                        BookId = new Guid("9bab3e82-359c-4630-8604-08d6c0d5a2a0")
+                    },
+                    new LineItem
+                    {
+                        NumBooks = 1,
+                        BookId = new Guid("975ddfea-cc3b-4886-8605-08d6c0d5a2a0")
+                    }
+                }
+            };
+        }
     }
 }

@@ -12,12 +12,9 @@ namespace BookStore.DataAccess.ModelsConfiguration
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
-            //builder.Property(b => b.PostalCode).IsRequired();
-            //builder.Property(a => a.Country).IsRequired();
-            //builder.Property(a => a.City).IsRequired();
-            //builder.Property(a => a.StreetLine1).IsRequired();
+
             builder.ToTable("Books");
-            
+            // TODO Book Model configuration
             builder.Property(b => b.SoftDeleted).HasDefaultValue(false);
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }

@@ -75,5 +75,8 @@ namespace BookStore.Controllers
             await service.UpdateAuthorsAsync(bookAuthors);
             return NoContent();
         }
+
+        // TODO add route for change actualPrice
+        // TODO BookController test class
     }
 }

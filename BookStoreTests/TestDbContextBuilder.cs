@@ -6,11 +6,11 @@ using System.Text;
 
 namespace WebApiYardTests
 {
-    class TestDbContextFactory
+    public class TestDbContextBuilder
     {
         private readonly BookStoreContext context;
 
-        public TestDbContextFactory()
+        public TestDbContextBuilder()
         {
             var options = new DbContextOptionsBuilder<BookStoreContext>()
                 .UseInMemoryDatabase(databaseName: "TestBookSroreDataBase")
@@ -23,8 +23,22 @@ namespace WebApiYardTests
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
         /// <returns></returns>
-        public BookStoreContext GetContext()
+        public bool FillDb<T>(IEnumerable<T> collection) where T : class
+        {
+            context.Set<T>().RemoveRange(context.Set<T>());
+            context.Set<T>().AddRange(collection);
+            context.SaveChanges();
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public BookStoreContext BuildContext()
         {
             return this.context;
         }

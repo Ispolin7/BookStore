@@ -56,9 +56,9 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<Guid> SaveAsync(Order order)
         {
+            // TODO validation
             order.CreatedAT = DateTime.UtcNow;
             order.ExpectedDeliveryDate = order.CreatedAT.AddDays(this.deliveryMargin);
-            // TODO auto generete id
             order.Id = new Guid();
             await this.orders.AddAsync(await this.itemService.CreateRangeAsync(order));
             await this.dbContext.SaveChangesAsync();
@@ -86,8 +86,9 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<bool> UpdateAsync(Order order)
         {
+            // TODO validation
             var oldOrder = await this.orders
-                 .AsNoTracking()
+                 //.AsNoTracking()
                  .Where(o => o.Id == order.Id)
                  .Include(o => o.LineItems)
                  .FirstOrDefaultAsync();

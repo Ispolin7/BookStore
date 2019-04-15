@@ -25,12 +25,8 @@ namespace BookStore.Controllers.ViewModels
 
         public string ImageUrl { get; set; }
 
-        //public IEnumerable<BookAuthor> BookAuthors { get; set; }
         public IEnumerable<AuthorViewModel> Authors { get; set; }
-        public IEnumerable<ReviewViewModel> Reviews { get; set; }
-
-        //public bool SoftDeleted { get; set; }
-        //public DateTime CreatedAT { get; set; }
-        //public DateTime? UpdatedAt { get; set; }
+        public IEnumerable<ReviewViewModel> Reviews { get; set; }  
+        // TODO StarsAverage
     }
 }

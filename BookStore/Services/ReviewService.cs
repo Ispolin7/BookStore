@@ -83,7 +83,7 @@ namespace BookStore.Services
             validation.ThrowIfInvalid();
 
             var oldReview = await this.reviews
-                 .AsNoTracking()
+                 //.AsNoTracking()
                  .Where(r => r.Id == review.Id)
                  .FirstOrDefaultAsync();
 

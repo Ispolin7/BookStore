@@ -1,126 +1,116 @@
 using BookStore.DataAccess;
-using BookStore.DataAccess.Models;
 using BookStore.Services;
+using BookStore.Services.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using Moq;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using WebApiYardTests;
 
 namespace BookStoreTests.Services
 {
     [TestClass]
     public class ReviewServiceTests
     {
-        //private MockRepository mockRepository;
+        private ReviewService service;
 
-        //private Mock<BookStoreContext> mockBookStoreContext;
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var contextBuilder = new TestDbContextBuilder();
+            contextBuilder.FillDb(CollectionsFactory.GetBooksCollection());
+            contextBuilder.FillDb(CollectionsFactory.GetReviewsCollection());
+            var context = contextBuilder.BuildContext();
+            service = new ReviewService(context, new ReviewValidator(context));
+        }
 
-        //[TestInitialize]
-        //public void TestInitialize()
-        //{
-        //    this.mockRepository = new MockRepository(MockBehavior.Strict);
+        [TestMethod]
+        public async Task AllAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetReviewsCollection().Count();
 
-        //    this.mockBookStoreContext = this.mockRepository.Create<BookStoreContext>();
-        //}
+            // Act
+            var result = await this.service.AllAsync();
+            var realCount = result.Count();
 
-        //[TestCleanup]
-        //public void TestCleanup()
-        //{
-        //    this.mockRepository.VerifyAll();
-        //}
+            // Assert
+            Assert.AreEqual(realCount, expectedCount, $"Expected - {expectedCount}, real - {realCount}");
+        }
 
-        //private ReviewService CreateService()
-        //{
-        //    return new ReviewService(
-        //        this.mockBookStoreContext.Object);
-        //}
+        [TestMethod]
+        public async Task AllBookReviewsAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var testReview = CollectionsFactory.GetReviewsCollection().First();
 
-        //[TestMethod]
-        //public async Task AllAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
+            // Act
+            var result = await this.service.AllBookReviewsAsync(testReview.BookId);
 
-        //    // Act
-        //    var result = await unitUnderTest.AllAsync();
+            // Assert
+            Assert.IsNotNull(result);
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        [TestMethod]
+        public async Task GetAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var testReview = CollectionsFactory.GetReviewsCollection().First();
 
-        //[TestMethod]
-        //public async Task AllBookReviewsAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid bookId = TODO;
+            // Act
+            var result = await this.service.GetAsync(testReview.Id);
 
-        //    // Act
-        //    var result = await unitUnderTest.AllBookReviewsAsync(
-        //        bookId);
+            // Assert
+            Assert.IsNotNull(result);
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        // TODO validation error
+        [TestMethod]
+        public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetReviewsCollection().Count() + 1;
+            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            testReview.Id = new Guid();
 
-        //[TestMethod]
-        //public async Task GetAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+            // Act
+            var result = await this.service.SaveAsync(testReview);
+            var newReviewsCollection = await this.service.AllAsync();
+            var newCount = newReviewsCollection.Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.GetAsync(
-        //        id);
+            // Assert
+            Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        [TestMethod]
+        public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetReviewsCollection().Count() - 1;
+            var testAuthor = CollectionsFactory.GetReviewsCollection().First();
 
-        //[TestMethod]
-        //public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Review review = TODO;
+            // Act
+            var result = await this.service.RemoveAsync(testAuthor.Id);
+            var newReviewCollection = await this.service.AllAsync();
+            var newCount = newReviewCollection.Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.SaveAsync(
-        //        review);
+            // Assert
+            Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
+        }
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+        // TODO validation error
+        [TestMethod]
+        public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            testReview.VoterName = "New Name";
 
-        //[TestMethod]
-        //public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+            // Act
+            var result = await this.service.UpdateAsync(testReview);
 
-        //    // Act
-        //    var result = await unitUnderTest.RemoveAsync(
-        //        id);
-
-        //    // Assert
-        //    Assert.Fail();
-        //}
-
-        //[TestMethod]
-        //public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Review review = TODO;
-
-        //    // Act
-        //    var result = await unitUnderTest.UpdateAsync(
-        //        review);
-
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.IsTrue(result);
+        }
     }
 }

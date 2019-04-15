@@ -56,7 +56,7 @@ namespace BookStore.Services
         public async Task<bool> UpdateAsync(Author author)
         {
             var oldAuthor = await this.authors
-                .AsNoTracking()
+                //.AsNoTracking()
                 .Where(a => a.Id == author.Id)
                 .FirstOrDefaultAsync();
 

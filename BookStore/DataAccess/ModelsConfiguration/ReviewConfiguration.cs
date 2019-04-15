@@ -13,7 +13,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.ToTable("Reviews");
-
+            // TODO Review Model configuration
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }

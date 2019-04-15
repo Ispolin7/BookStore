@@ -59,34 +59,7 @@ namespace BookStore.Controllers
         // PUT: api/Author/5
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> PutAuthor([FromRoute] Guid id, [FromBody] AuthorUpdateModel author)
-        {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            //if (id != author.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            //_context.Entry(author).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!AuthorExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+        {           
             await service.UpdateAsync(mapper.Map<Author>(author));
             return NoContent();
         }
@@ -95,28 +68,11 @@ namespace BookStore.Controllers
         // DELETE: api/Author/5
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteAuthor([FromRoute] Guid id)
-        {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            //var author = await _context.Authors.FindAsync(id);
-            //if (author == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //_context.Authors.Remove(author);
-            //await _context.SaveChangesAsync();
-
+        {          
             await this.service.RemoveAsync(id);
             return NoContent();
         }
 
-        //private bool AuthorExists(Guid id)
-        //{
-        //    return _context.Authors.Any(e => e.Id == id);
-        //}
+        // TODO AuthorController test class
     }
 }

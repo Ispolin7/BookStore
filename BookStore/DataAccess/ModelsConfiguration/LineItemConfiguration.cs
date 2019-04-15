@@ -13,8 +13,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<LineItem> builder)
         {
             builder.ToTable("LineItems");
-            //builder.Property(i => i.LineNum).ValueGeneratedOnAdd();
-            //builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            // TODO LineItem Model configuration
         }
     }
 }

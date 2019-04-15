@@ -1,96 +1,108 @@
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services;
+using BookStore.Services.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using WebApiYardTests;
 
 namespace BookStoreTests.Services
 {
     [TestClass]
     public class AuthorServiceTests
     {
-        
+        private IAuthorService service;
+       
 
-        //[TestInitialize]
-        //public void TestInitialize()
-        //{
-        //    this.mockRepository = new MockRepository(MockBehavior.Strict);
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var contextBuilder = new TestDbContextBuilder();
+            contextBuilder.FillDb(CollectionsFactory.GetAuthorsCollection());
+            contextBuilder.FillDb(CollectionsFactory.GetBooksCollection());
+            contextBuilder.FillDb(CollectionsFactory.GetBookAuthorsCollection());
 
-        //    this.mockBookStoreContext = this.mockRepository.Create<BookStoreContext>();
-        //}
+            service = new AuthorService(contextBuilder.BuildContext()); 
+        }
 
-        //[TestMethod]
-        //public async Task AllAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
+        [TestMethod]
+        public async Task AllAsync_GetAllAuthors_ExpectedEqualAmount()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.AllAsync();
+            // Act
+            var result = await this.service.AllAsync();
+            var realCount = result.Count();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.AreEqual(realCount, expectedCount, $"Expected - {expectedCount}, real - {realCount}");
+        }
 
-        //[TestMethod]
-        //public async Task GetAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+        [TestMethod]
+        public async Task GetAsync_GetAuthor_ExpectedEqualBooksAmount()
+        {
+            // Arrange
+            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            var expectedBooks = CollectionsFactory.GetBookAuthorsCollection()
+                .Where(ba => ba.AuthorId == testAuthor.Id)
+                .Count();
 
-        //    // Act
-        //    var result = await unitUnderTest.GetAsync(
-        //        id);
+            // Act
+            var author = await this.service.GetAsync(testAuthor.Id);
+            var firstAuthorBooks = author.BookAuthors.Count();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.AreEqual(firstAuthorBooks, expectedBooks, $"Expected - {expectedBooks}, real - {firstAuthorBooks}");
+        }
 
-        //[TestMethod]
-        //public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Author author = TODO;
+        [TestMethod]
+        public async Task SaveAsync_AddNewAuthor_ExpectedIncrement()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count() + 1;
+            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            testAuthor.Id = new Guid();
 
-        //    // Act
-        //    var result = await unitUnderTest.SaveAsync(
-        //        author);
+            // Act
+            var result = await this.service.SaveAsync(testAuthor);
+            var newAuthorsCollection = await this.service.AllAsync();
+            var newCount = newAuthorsCollection.Count();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
+        }
 
-        //[TestMethod]
-        //public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Guid id = TODO;
+        [TestMethod]
+        public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            testAuthor.Name = "New Name";
 
-        //    // Act
-        //    var result = await unitUnderTest.RemoveAsync(
-        //        id);
+            // Act
+            var result = await this.service.UpdateAsync(testAuthor);
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.IsTrue(result);
+        }
 
-        //[TestMethod]
-        //public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
-        //{
-        //    // Arrange
-        //    var unitUnderTest = this.CreateService();
-        //    Author author = TODO;
+        [TestMethod]
+        public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
+        {
+            // Arrange
+            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count() - 1;
+            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
 
-        //    // Act
-        //    var result = await unitUnderTest.UpdateAsync(
-        //        author);
+            // Act
+            var result = await this.service.RemoveAsync(testAuthor.Id);
+            var newAuthorsCollection = await this.service.AllAsync();
+            var newCount = newAuthorsCollection.Count();
 
-        //    // Assert
-        //    Assert.Fail();
-        //}
+            // Assert
+            Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
+        }        
     }
 }
