@@ -1,10 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.DataAccess.ModelsConfiguration
 {
@@ -13,7 +9,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<Author> builder)
         {
             builder.ToTable("Authors");
-            // TODO Author Model configuration
+            builder.Property(b => b.Name).IsRequired().HasMaxLength(50);
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }

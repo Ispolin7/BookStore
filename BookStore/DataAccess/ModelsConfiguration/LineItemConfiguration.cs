@@ -13,7 +13,11 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<LineItem> builder)
         {
             builder.ToTable("LineItems");
-            // TODO LineItem Model configuration
+            builder.Property(b => b.LineNum).IsRequired().HasMaxLength(10);
+            builder.Property(b => b.NumBooks).IsRequired().HasMaxLength(3);
+            builder.Property(b => b.BookPrice).IsRequired().HasMaxLength(10);
+            builder.Property(b => b.BookId).IsRequired();
+            builder.Property(b => b.OrderId).IsRequired();
         }
     }
 }

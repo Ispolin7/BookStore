@@ -14,20 +14,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<BookAuthor> builder)
         {
             builder.ToTable("BookAuthors");
-            // TODO BookAuthor Model configuration
-            builder.HasKey(ba => new { ba.BookId, ba.AuthorId });
-            //builder.Property(ba => ba.Order).HasConversion(
-
-            //    );
-            //builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
-            //var converter = new ValueConverter<Guid[], string>(
-            //    v => v.Select(g => g.ToString()),
-            //    v => v.Select(g => Guid.Parse(g));
-
-            //Guid[] guids = new Guid[200];
-            //var guidStrings = guids.Select(g => g.ToString());
-            //var revertedGuids = guidStrings.Select(g => Guid.Parse(g));
-
+            builder.HasKey(ba => new { ba.BookId, ba.AuthorId });           
         }
     }
 }

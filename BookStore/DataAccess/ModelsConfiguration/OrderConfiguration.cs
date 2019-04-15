@@ -1,10 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.DataAccess.ModelsConfiguration
 {
@@ -13,7 +9,8 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<Order> builder)
         {
             builder.ToTable("Orders");
-            // TODO Order Model configuration
+            builder.Property(o => o.CustomerName).IsRequired().HasMaxLength(255);
+            builder.Property(o => o.ExpectedDeliveryDate).IsRequired();
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }

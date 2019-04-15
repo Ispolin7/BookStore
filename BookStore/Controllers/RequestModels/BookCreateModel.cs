@@ -6,7 +6,7 @@ namespace BookStore.Controllers.RequestModels
     public class BookCreateModel
     {
         [Required]
-        [StringLength(300, MinimumLength = 3)]
+        [StringLength(70, MinimumLength = 3)]
         public string Title { get; set; }
 
         [Required]

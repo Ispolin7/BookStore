@@ -1,10 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.DataAccess.ModelsConfiguration
 {
@@ -13,7 +9,10 @@ namespace BookStore.DataAccess.ModelsConfiguration
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.ToTable("Reviews");
-            // TODO Review Model configuration
+            builder.Property(r => r.VoterName).IsRequired().HasMaxLength(255);
+            builder.Property(r => r.NumStars).IsRequired().HasMaxLength(2);
+            builder.Property(r => r.Comment).IsRequired().HasMaxLength(1000);
+            builder.Property(r => r.BookId).IsRequired();
             builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }
