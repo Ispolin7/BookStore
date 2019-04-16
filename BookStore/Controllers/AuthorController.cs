@@ -5,7 +5,6 @@ using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStore.Controllers
@@ -24,50 +23,64 @@ namespace BookStore.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Author
+        /// <summary>
+        /// Display a listing of the resource.
+        /// </summary>
+        /// <returns>Authors collection</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorViewModel>>> GetAuthors()
+        public async Task<IActionResult> GetAuthorsAsync()
         {
             var collection = await service.AllAsync();
             var mappedAuthors = this.mapper.Map<AuthorViewModel[]>(collection);
             return Ok(mappedAuthors);
         }
 
-        // GET: api/Author/5
+        /// <summary>
+        /// Display the specified resource.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Author information</returns>
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult> GetAuthor([FromRoute] Guid id)
+        public async Task<IActionResult> GetAuthorAsync([FromRoute] Guid id)
         {
             var author = await service.GetAsync(id);
             var mappedAuthor = this.mapper.Map<AuthorViewModel>(author);
             return Ok(mappedAuthor);
         }
 
-        // POST: api/Author
+        /// <summary>
+        /// Store a newly created resource in storage.
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns>status code</returns>
         [HttpPost]
-        public async Task<ActionResult> PostAuthor([FromBody] AuthorCreateModel author)
+        public async Task<IActionResult> PostAuthorAsync([FromBody] AuthorRequest author)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
             var id = await service.SaveAsync(mapper.Map<Author>(author));
-
             return CreatedAtAction("GetAuthor", new { id }, null);
         }
 
-        // PUT: api/Author/5
+        /// <summary>
+        /// Update the specified resource in storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="author"></param>
+        /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
-        public async Task<IActionResult> PutAuthor([FromRoute] Guid id, [FromBody] AuthorUpdateModel author)
-        {           
+        public async Task<IActionResult> PutAuthorAsync([FromRoute] Guid id, [FromBody] AuthorRequest author)
+        {
+            author.Id = id;
             await service.UpdateAsync(mapper.Map<Author>(author));
             return NoContent();
         }
 
-
-        // DELETE: api/Author/5
+        /// <summary>
+        /// Remove the specified resource from storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteAuthor([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteAuthorAsync([FromRoute] Guid id)
         {          
             await this.service.RemoveAsync(id);
             return NoContent();

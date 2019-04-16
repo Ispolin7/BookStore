@@ -5,7 +5,6 @@ using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStore.Controllers
@@ -24,52 +23,77 @@ namespace BookStore.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/books
+        /// <summary>
+        /// Display a listing of the resource.
+        /// </summary>
+        /// <returns>Books collection</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookViewModel>>> Getbooks()
+        public async Task<IActionResult> GetbooksAsync()
         {
             var collection = await service.AllAsync();
             var mappedBooks = this.mapper.Map<BookViewModel[]>(collection);
             return Ok(mappedBooks);
         }
 
-        // GET: api/books/5
+        /// <summary>
+        /// Display the specified resource.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Book information</returns>
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult> GetBook([FromRoute] Guid id)
+        public async Task<IActionResult> GetBookAsync([FromRoute] Guid id)
         {
             var book = await service.GetAsync(id);
             var mappedBook = this.mapper.Map<BookViewModel>(book);
             return Ok(mappedBook);
         }
 
-        // POST: api/books
+        /// <summary>
+        /// Store a newly created resource in storage.
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>status code</returns>
         [HttpPost]
-        public async Task<ActionResult> PostBook([FromBody] BookCreateModel book)
+        public async Task<IActionResult> PostBookAsync([FromBody] BookRequest book)
         {           
             var id = await service.SaveAsync(mapper.Map<Book>(book));
-
-            return CreatedAtAction(nameof(GetBook), new { id }, null);
+            return CreatedAtAction(nameof(GetBookAsync), new { id }, null);
         }
 
-        // PUT: api/books/5
+        /// <summary>
+        /// Update the specified resource in storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="book"></param>
+        /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
-        public async Task<IActionResult> PutBook([FromRoute] Guid id, [FromBody] BookUpdateModel book)
-        {            
+        public async Task<IActionResult> PutBookAsync([FromRoute] Guid id, [FromBody] BookRequest book)
+        {
+            book.Id = id;
             await service.UpdateAsync(mapper.Map<Book>(book));
             return NoContent();
         }
 
-        // DELETE: api/books/5
+        /// <summary>
+        /// Remove the specified resource from storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteBook([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteBookAsync([FromRoute] Guid id)
         {            
             await this.service.RemoveAsync(id);
             return NoContent();
         }
 
-        
+        /// <summary>
+        /// Update book's authors
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="bookAuthors"></param>
+        /// <returns>status code</returns>
         [HttpPut("{id:Guid}/authors")]
-        public async Task<IActionResult> UpdateAuthors([FromRoute] Guid id, [FromBody] BookAuthors bookAuthors)
+        public async Task<IActionResult> UpdateAuthorsAsync([FromRoute] Guid id, [FromBody] BookAuthorsRequest bookAuthors)
         {
             bookAuthors.BookId = id;
             await service.UpdateAuthorsAsync(bookAuthors);
@@ -77,12 +101,12 @@ namespace BookStore.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Add/change book's discount
         /// </summary>
         /// <param name="discountModel"></param>
-        /// <returns></returns>
+        /// <returns>status code</returns>
         [HttpPut("discount")]
-        public async Task<IActionResult> ChangeDiscount([FromBody] DiscountModel discountModel)
+        public async Task<IActionResult> ChangeDiscountAsync([FromBody] DiscountRequest discountModel)
         {
             await service.UpdateDiscountAsync(discountModel);
             return NoContent();

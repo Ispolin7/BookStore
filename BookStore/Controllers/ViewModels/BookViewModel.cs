@@ -12,7 +12,7 @@ namespace BookStore.Controllers.ViewModels
 
         public string Description { get; set; }
 
-        public DateTime PublishedOn { get; set; }
+        public int PublishedOn { get; set; }
 
         public string Publisher { get; set; }
 

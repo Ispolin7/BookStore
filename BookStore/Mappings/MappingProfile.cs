@@ -2,7 +2,6 @@
 using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
-using System;
 using System.Linq;
 
 namespace BookStore.Mappings
@@ -11,36 +10,20 @@ namespace BookStore.Mappings
     {
         public MappingProfile()
         {
+            //Request to DB mapping.
+            CreateMap<AuthorRequest, Author>();            
+            CreateMap<BookRequest, Book>();                     
+            CreateMap<OrderRequest, Order>();            
+            CreateMap<LineItemRequest, LineItem>();           
+            CreateMap<ReviewRequest, Review>();
             
-            CreateMap<AuthorCreateModel, Author>();
-            CreateMap<AuthorUpdateModel, Author>();
-
-            CreateMap<BookCreateModel, Book>()
-                .ForMember(u => u.PublishedOn, opt => opt.MapFrom(x => DateTime.Parse(x.PublishedOn)));
-            CreateMap<BookUpdateModel, Book>()
-                .ForMember(u => u.PublishedOn, opt => opt.MapFrom(x => DateTime.Parse(x.PublishedOn)));
-
-            CreateMap<OrderCreateModel, Order>();
-            CreateMap<OrderUpdateModel, Order>();
-
-            CreateMap<LineItemCreateModel, LineItem>();
-            CreateMap<LineItemUpdateModel, LineItem>();
-
-            CreateMap<ReviewCreateModel, Review>();
-            CreateMap<ReviewUpdateModel, Review>();
-
+            //DB to View mapping
             CreateMap<Author, AuthorViewModel>()
                 .ForMember(v => v.Books, opt => opt.MapFrom(a => a.BookAuthors.Select(ba => ba.Book).ToList()));
-
-            CreateMap<Book, BookViewModel>()
-                .ForMember(v => v.PublishedOn, opt => opt.MapFrom(b => b.PublishedOn.ToString()));
-                //.ForMember(v => v.Authors, opt => opt.MapFrom(b => b.Authors.Select(a => new {a.Id, a.Name})));
-
+            CreateMap<Book, BookViewModel>();                
             CreateMap<LineItem, LineItemViewModel>();
-
             CreateMap<Order, OrderViewModel>()
                 .ForMember(v => v.DateOrderredUtc, opt => opt.MapFrom(x => x.CreatedAT.ToString()));
-
             CreateMap<Review, ReviewViewModel>();
         }
     }

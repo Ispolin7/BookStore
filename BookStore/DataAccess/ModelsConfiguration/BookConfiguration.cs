@@ -11,7 +11,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
             builder.ToTable("Books");
             builder.Property(b => b.Title).IsRequired().HasMaxLength(70);
             builder.Property(b => b.Description).IsRequired().HasMaxLength(3000);
-            builder.Property(b => b.PublishedOn).IsRequired(); // TODO DateTime Date
+            builder.Property(b => b.PublishedOn).IsRequired().HasMaxLength(4);
             builder.Property(b => b.Publisher).IsRequired().HasMaxLength(100);
             builder.Property(b => b.OrgPrice).IsRequired().HasMaxLength(10);
             builder.Property(b => b.ActualPrice).IsRequired().HasMaxLength(10);

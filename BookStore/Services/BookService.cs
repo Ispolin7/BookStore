@@ -122,7 +122,7 @@ namespace BookStore.Services
         /// </summary>
         /// <param name="bookAuthors"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateAuthorsAsync(BookAuthors bookAuthors)
+        public async Task<bool> UpdateAuthorsAsync(BookAuthorsRequest bookAuthors)
         {
             var oldAuthorsCollection =  await dbContext.Set<BookAuthor>()
                 .Where(ba => ba.BookId == bookAuthors.BookId)
@@ -165,7 +165,7 @@ namespace BookStore.Services
         /// </summary>
         /// <param name="discountModel"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateDiscountAsync(DiscountModel discountModel)
+        public async Task<bool> UpdateDiscountAsync(DiscountRequest discountModel)
         {
             var booksCollection = await this.dbContext.Books.Where(b => discountModel.BooksId.Contains(b.Id)).ToListAsync();
             booksCollection.ForEach(b => b.ActualPrice = b.OrgPrice - (b.OrgPrice * discountModel.Discount / 100));

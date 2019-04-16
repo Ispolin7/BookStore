@@ -1,10 +1,13 @@
-﻿using System;
+﻿using BookStore.Common.DataAnotationtAttributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookStore.Controllers.RequestModels
 {
-    public class BookCreateModel
+    public class BookRequest
     {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(70, MinimumLength = 3)]
         public string Title { get; set; }
@@ -14,8 +17,9 @@ namespace BookStore.Controllers.RequestModels
         public string Description { get; set; }
 
         [Required]
-        //[DataType(DataType.Date)]
-        public string PublishedOn { get; set; }
+        // TODO validation year
+        [NotMoreCurrentYear]
+        public int PublishedOn { get; set; }
 
         [Required]
         [StringLength(100, MinimumLength = 3)]

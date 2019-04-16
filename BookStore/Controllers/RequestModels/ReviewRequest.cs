@@ -3,8 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookStore.Controllers.RequestModels
 {
-    public class ReviewCreateModel
-    {     
+    public class ReviewRequest
+    {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(255, MinimumLength = 3)]
         public string VoterName { get; set; }

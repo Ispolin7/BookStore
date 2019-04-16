@@ -9,7 +9,7 @@ namespace BookStore.Services.Validators
         public BookValidator()
         {
             RuleFor(b => b.ActualPrice).LessThanOrEqualTo(b => b.OrgPrice).WithMessage("ActualPrice can not be more than OrgPrice");
-            RuleFor(b => b.PublishedOn).LessThan(DateTime.Now).WithMessage("PublishedOn can not be more than curent date");
+            //RuleFor(b => b.PublishedOn).LessThanOrEqualTo(DateTime.Now.Year).WithMessage("PublishedOn can not be more than curent year");
         }
     }
 }

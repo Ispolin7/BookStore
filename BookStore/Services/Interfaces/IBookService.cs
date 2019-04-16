@@ -8,7 +8,7 @@ namespace BookStore.Services.Interfaces
 {
     public interface IBookService : ICRUDService<Book>
     {
-        Task<bool> UpdateAuthorsAsync(BookAuthors bookAuthors);
-        Task<bool> UpdateDiscountAsync(DiscountModel discountModel);
+        Task<bool> UpdateAuthorsAsync(BookAuthorsRequest bookAuthors);
+        Task<bool> UpdateDiscountAsync(DiscountRequest discountModel);
     }
 }

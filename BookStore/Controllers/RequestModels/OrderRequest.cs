@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookStore.Controllers.RequestModels
 {
-    public class OrderCreateModel
+    public class OrderRequest
     {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(255, MinimumLength = 3)]
         public string CustomerName { get; set; }
 
         [Required]
         [MinLength(1)]
-        public IEnumerable<LineItemCreateModel> LineItems { get; set; }
+        public IEnumerable<LineItemRequest> LineItems { get; set; }
     }
 }

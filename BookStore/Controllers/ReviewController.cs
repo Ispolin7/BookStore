@@ -5,7 +5,6 @@ using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStore.Controllers
@@ -24,45 +23,67 @@ namespace BookStore.Controllers
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/reviews
+        /// <summary>
+        /// Display a listing of the resource.
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns>Review collection</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReviewViewModel>>> GetReviews([FromRoute] Guid bookId)
+        public async Task<IActionResult> GetReviewsAsync([FromRoute] Guid bookId)
         {
             var collection = await service.AllBookReviewsAsync(bookId);
             var mappedReview = this.mapper.Map<ReviewViewModel[]>(collection);
             return Ok(mappedReview);
         }
 
-        // GET: api/reviews/5
+        /// <summary>
+        /// Display the specified resource.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Review information</returns>
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult> GetReview([FromRoute] Guid id)
+        public async Task<IActionResult> GetReviewAsync([FromRoute] Guid id)
         {
             var review = await service.GetAsync(id);
             var mappedReview = this.mapper.Map<ReviewViewModel>(review);
             return Ok(mappedReview);
         }
 
-        // POST: api/reviews
+        /// <summary>
+        /// Store a newly created resource in storage.
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="review"></param>
+        /// <returns>status code</returns>
         [HttpPost]
-        public async Task<ActionResult> PostReview([FromRoute] Guid bookId, [FromBody] ReviewCreateModel review)
+        public async Task<IActionResult> PostReviewAsync([FromRoute] Guid bookId, [FromBody] ReviewRequest review)
         {
             review.BookId = bookId;
             var id = await service.SaveAsync(mapper.Map<Review>(review));
-            return CreatedAtAction(nameof(GetReview), new { id }, null);
+            return CreatedAtAction(nameof(GetReviewAsync), new { id }, null);
         }
 
-        // PUT: api/reviews/5
+        /// <summary>
+        /// Update the specified resource in storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="review"></param>
+        /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
-        public async Task<IActionResult> PutReview([FromRoute] Guid id, [FromBody] ReviewUpdateModel review)
+        public async Task<IActionResult> PutReviewAsync([FromRoute] Guid id, [FromBody] ReviewRequest review)
         {
             review.Id = id;
             await service.UpdateAsync(mapper.Map<Review>(review));
             return NoContent();
         }
 
-        // DELETE: api/reviews/5
+        /// <summary>
+        /// Remove the specified resource from storage.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> DeleteReview([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteReviewAsync([FromRoute] Guid id)
         {
             await this.service.RemoveAsync(id);
             return NoContent();
