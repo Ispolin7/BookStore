@@ -71,6 +71,7 @@ namespace BookStore
             {
                 app.UseExceptionHandler(a => a.Run(async context =>
                 {
+                    // TODO add GlobalExceptionMiddleware
                     var feature = context.Features.Get<IExceptionHandlerPathFeature>();
                     var exception = feature.Error;
 

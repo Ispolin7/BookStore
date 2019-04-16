@@ -14,14 +14,14 @@ namespace BookStore.Services
 {
     public class BookService : IBookService
     {
-        private readonly DbContext dbContext;
-        private readonly DbSet<Book> books;
+        private readonly BookStoreContext dbContext;
+        //private readonly DbSet<Book> books;
         private readonly IValidator<Book> bookValidator;
 
         public BookService(BookStoreContext context, IValidator<Book> validator)
         {
             this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
-            this.books = dbContext.Set<Book>();
+            //this.books = dbContext.Set<Book>();
             this.bookValidator = validator ?? throw new ArgumentNullException(nameof(bookValidator));
         }
 
@@ -31,7 +31,7 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<IEnumerable<Book>> AllAsync()
         {
-            var collection = await this.books
+            var collection = await this.dbContext.Books
                 .AsNoTracking()
                 .Where(b => b.SoftDeleted == false)
                 .Include(b => b.BookAuthors)
@@ -49,7 +49,7 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<Book> GetAsync(Guid id)
         {
-            var book = await this.books
+            var book = await this.dbContext.Books
                 .AsNoTracking()
                 .Where(b => (b.SoftDeleted == false) && (b.Id == id))
                 .Include(b => b.BookAuthors)
@@ -70,7 +70,7 @@ namespace BookStore.Services
         public async Task<Guid> SaveAsync(Book book)
         {
             this.bookValidator.Validate(book).ThrowIfInvalid();
-            await this.books.AddAsync(book);
+            await this.dbContext.Books.AddAsync(book);
             await this.dbContext.SaveChangesAsync();
             return book.Id;
         }        
@@ -82,9 +82,9 @@ namespace BookStore.Services
         /// <returns></returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
-            var book = await this.books.FindAsync(id);
+            var book = await this.dbContext.Books.FindAsync(id);
             book.SoftDeleted = true;
-            this.books.Update(book);
+            this.dbContext.Books.Update(book);
             await this.dbContext.SaveChangesAsync();
             return true;
         }
@@ -98,8 +98,7 @@ namespace BookStore.Services
         {
             this.bookValidator.Validate(book).ThrowIfInvalid();
 
-            var oldBook = await this.books
-                 //.AsNoTracking()
+            var oldBook = await this.dbContext.Books      
                  .Where(a => a.Id == book.Id)
                  .FirstOrDefaultAsync();
 
@@ -113,7 +112,7 @@ namespace BookStore.Services
             oldBook.ImageUrl = book.ImageUrl;
             oldBook.UpdatedAt = DateTime.Now;
 
-            var result = this.books.Update(oldBook);
+            var result = this.dbContext.Books.Update(oldBook);
             await this.dbContext.SaveChangesAsync();
             return true;
         }
@@ -159,6 +158,20 @@ namespace BookStore.Services
                 .Select(ba => ba.Author)
                 .Select(a => new Author { Id = a.Id, Name = a.Name})
                 .ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="discountModel"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateDiscountAsync(DiscountModel discountModel)
+        {
+            var booksCollection = await this.dbContext.Books.Where(b => discountModel.BooksId.Contains(b.Id)).ToListAsync();
+            booksCollection.ForEach(b => b.ActualPrice = b.OrgPrice - (b.OrgPrice * discountModel.Discount / 100));
+            this.dbContext.Books.UpdateRange(booksCollection);
+            await this.dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

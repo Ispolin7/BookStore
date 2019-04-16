@@ -1,8 +1,6 @@
-﻿using BookStore.DataAccess.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.Controllers.ViewModels
 {
@@ -24,9 +22,20 @@ namespace BookStore.Controllers.ViewModels
         public string PromotionalText { get; set; }
 
         public string ImageUrl { get; set; }
-
+        
         public IEnumerable<AuthorViewModel> Authors { get; set; }
-        public IEnumerable<ReviewViewModel> Reviews { get; set; }  
-        // TODO StarsAverage
+        public IEnumerable<ReviewViewModel> Reviews { get; set; }
+
+        public double StarsAverage
+        {
+            get
+            {
+                if (this.Reviews.Count() > 0)
+                {
+                    return this.Reviews.Select(r => r.NumStars).Average();
+                }
+                return 0;
+            }
+        }
     }
 }

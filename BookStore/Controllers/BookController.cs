@@ -76,7 +76,18 @@ namespace BookStore.Controllers
             return NoContent();
         }
 
-        // TODO add route for change actualPrice
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="discountModel"></param>
+        /// <returns></returns>
+        [HttpPut("discount")]
+        public async Task<IActionResult> ChangeDiscount([FromBody] DiscountModel discountModel)
+        {
+            await service.UpdateDiscountAsync(discountModel);
+            return NoContent();
+        }
+       
         // TODO BookController test class
     }
 }
