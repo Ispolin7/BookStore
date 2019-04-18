@@ -1,3 +1,4 @@
+using BookStore.Common;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services;
@@ -16,7 +17,6 @@ namespace BookStoreTests.Services
     [TestClass]
     public class OrderServiceTests
     {
-        //private OrderService service;
         private BookStoreContext dbContext;
         private Mock<ILineItemService> mockLineItemService;
 
@@ -29,24 +29,14 @@ namespace BookStoreTests.Services
             contextBuilder.FillDb(CollectionsFactory.GetLineItemsCollection());
             contextBuilder.FillDb(CollectionsFactory.GetBooksCollection());
             this.dbContext = contextBuilder.BuildContext();
-
-            //service = new OrderService(context, mockLineItemService.Object);
-        }
-
-        private OrderService CreateService()
-        {
-            return new OrderService(
-                this.dbContext, 
-                this.mockLineItemService.Object, 
-                new OrderValidator(this.dbContext));
         }
 
         [TestMethod]
-        public async Task AllAsync_StateUnderTest_ExpectedBehavior()
+        public async Task AllAsync_GetAllOrders_ExpectedCorrectAmount()
         {
             // Arrange
             var service = this.CreateService();
-            var expectedCount = CollectionsFactory.GetOrdersCollection().Count();
+            var expectedCount = this.CountOrdersInCollection();
 
             // Act
             var result = await service.AllAsync();
@@ -57,11 +47,11 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task GetAsync_StateUnderTest_ExpectedBehavior()
+        public async Task GetAsync_GetOrderInformation_ExpectedCorrectDependensiecAmount()
         {
             // Arrange
             var service = this.CreateService();
-            var testOrder = CollectionsFactory.GetOrdersCollection().First();
+            var testOrder = this.GetTestOrder();
             var expectedLineItems = CollectionsFactory.GetLineItemsCollection()
                 .Where(i => i.OrderId == testOrder.Id)
                 .Count();
@@ -74,9 +64,8 @@ namespace BookStoreTests.Services
             Assert.AreEqual(expectedLineItems, realLineItems, $"Expected - {expectedLineItems} LineItems, real - {realLineItems}");
         }
 
-        // TODO add test false validation
         [TestMethod]
-        public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
+        public async Task SaveAsync_AddNewOrderToDb_ExpectedIncrementAmount()
         {
             // Arrange
             var order = GetOrder();
@@ -97,12 +86,31 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
+        [ExpectedException(typeof(ModelStateException))]
+        public async Task SaveAsync_AddNewOrderToDb_ExpectedValidationException()
+        {
+            // Arrange     
+            var service = this.CreateService();
+            var testOrder = this.GetTestOrder();
+            testOrder.LineItems = new List<LineItem>
+            {
+                new LineItem
+                {
+                    BookId = new Guid()
+                }
+            };
+
+            // Act
+            await service.SaveAsync(testOrder);
+        }
+
+        [TestMethod]
+        public async Task RemoveAsync_DeleteOrderInDb_ExpectedDecrementCount()
         {
             // Arrange
             var service = this.CreateService();
-            var expectedCount = CollectionsFactory.GetOrdersCollection().Count() - 1;
-            var testOrder = CollectionsFactory.GetOrdersCollection().First();
+            var expectedCount = CountOrdersInCollection() - 1;
+            var testOrder = GetTestOrder();
 
             // Act
             var result = await service.RemoveAsync(testOrder.Id);
@@ -115,7 +123,7 @@ namespace BookStoreTests.Services
 
         // TODO Exception The instance of entity type 'Order' cannot be tracked because another instance with the key value 
         [TestMethod]
-        public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
+        public async Task UpdateAsync_UpdateOrderInformation_ExpectedSuccess()
         {
             // Arrange
             var order = GetOrder();
@@ -128,14 +136,18 @@ namespace BookStoreTests.Services
                 .Returns(Task.FromResult(mockedOrder));
 
             var service = CreateService();
-            // Act
 
+            // Act
             var result = await service.UpdateAsync(order);
 
             // Assert
             Assert.IsTrue(result);
         }
 
+        /// <summary>
+        /// Create moq order instance
+        /// </summary>
+        /// <returns>order with lone items collection</returns>
         public Order GetMockedOrder()
         {
             return new Order
@@ -162,6 +174,10 @@ namespace BookStoreTests.Services
             };
         }
 
+        /// <summary>
+        /// Create new order instance
+        /// </summary>
+        /// <returns>order with lone items collection</returns>
         public Order GetOrder()
         {
             return new Order
@@ -181,6 +197,36 @@ namespace BookStoreTests.Services
                     }
                 }
             };
+        }
+
+        /// <summary>
+        /// Get test order from test collection
+        /// </summary>
+        /// <returns>order instance</returns>
+        public Order GetTestOrder()
+        {
+            return CollectionsFactory.GetOrdersCollection().First();
+        }
+
+        /// <summary>
+        /// Count the number of orders in test collection.
+        /// </summary>
+        /// <returns></returns>
+        public int CountOrdersInCollection()
+        {
+            return CollectionsFactory.GetOrdersCollection().Count();
+        }
+
+        /// <summary>
+        /// Create new OrderService instance
+        /// </summary>
+        /// <returns>order service</returns>
+        private OrderService CreateService()
+        {
+            return new OrderService(
+                this.dbContext,
+                this.mockLineItemService.Object,
+                new OrderValidator(this.dbContext));
         }
     }
 }

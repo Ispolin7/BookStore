@@ -26,7 +26,7 @@ namespace BookStore.Services
         {
             foreach (var item in order.LineItems)
             {
-                await this.CalculateAllProperties(item, order.Id, order.CreatedAT);
+                await this.CalculateAllProperties(item);
             }
             return order;
         }
@@ -41,29 +41,25 @@ namespace BookStore.Services
         {
             foreach (var item in newOrder.LineItems)
             {
-                await this.CalculateAllProperties(item, newOrder.Id, newOrder.CreatedAT);
+                await this.CalculateAllProperties(item);
             }
 
-            dbContext.Set<LineItem>().RemoveRange(oldOrder.LineItems);
-            oldOrder.LineItems = newOrder.LineItems;         
+            dbContext.LineItems.RemoveRange(oldOrder.LineItems);       
 
-            return oldOrder;
+            return newOrder;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="id"></param>
-        /// <param name="createTime"></param>
         /// <returns></returns>
-        public async Task CalculateAllProperties(LineItem item, Guid id, DateTime createTime)
+        public async Task CalculateAllProperties(LineItem item)
         {
-            item.OrderId = id;
-            var book = await dbContext.Set<Book>().Where(b => b.Id == item.BookId).FirstOrDefaultAsync();
+            //item.OrderId = id;
+            var book = await dbContext.Books.Where(b => b.Id == item.BookId).FirstOrDefaultAsync();
             item.LineNum = new Random().Next(0000000, 9999999).ToString();
             item.BookPrice = item.NumBooks * book.ActualPrice;
-            //item.CreatedAT = createTime;
         }
     }
 }

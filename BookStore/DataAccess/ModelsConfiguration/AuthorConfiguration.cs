@@ -1,5 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookStore.DataAccess.ModelsConfiguration
@@ -10,7 +11,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
         {
             builder.ToTable("Authors");
             builder.Property(b => b.Name).IsRequired().HasMaxLength(50);
-            builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            builder.Property(b => b.CreatedAT).Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
         }
     }
 }

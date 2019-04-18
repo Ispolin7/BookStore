@@ -31,7 +31,7 @@ namespace BookStoreTests.Services
         public async Task AllAsync_GetAllAuthors_ExpectedEqualAmount()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count();
+            var expectedCount = this.CountAuthorsInCollection();
 
             // Act
             var result = await this.service.AllAsync();
@@ -45,7 +45,7 @@ namespace BookStoreTests.Services
         public async Task GetAsync_GetAuthor_ExpectedEqualBooksAmount()
         {
             // Arrange
-            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            var testAuthor = GetTestAuthor();
             var expectedBooks = CollectionsFactory.GetBookAuthorsCollection()
                 .Where(ba => ba.AuthorId == testAuthor.Id)
                 .Count();
@@ -62,8 +62,8 @@ namespace BookStoreTests.Services
         public async Task SaveAsync_AddNewAuthor_ExpectedIncrement()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count() + 1;
-            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            var expectedCount = CountAuthorsInCollection() + 1;
+            var testAuthor = GetTestAuthor();
             testAuthor.Id = new Guid();
 
             // Act
@@ -79,7 +79,7 @@ namespace BookStoreTests.Services
         public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
         {
             // Arrange
-            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            var testAuthor = GetTestAuthor();
             testAuthor.Name = "New Name";
 
             // Act
@@ -93,8 +93,8 @@ namespace BookStoreTests.Services
         public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetAuthorsCollection().Count() - 1;
-            var testAuthor = CollectionsFactory.GetAuthorsCollection().First();
+            var expectedCount = CountAuthorsInCollection() - 1;
+            var testAuthor = GetTestAuthor();
 
             // Act
             var result = await this.service.RemoveAsync(testAuthor.Id);
@@ -103,6 +103,24 @@ namespace BookStoreTests.Services
 
             // Assert
             Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
-        }        
+        }
+
+        /// <summary>
+        /// Get Author instance for test.
+        /// </summary>
+        /// <returns>author instance</returns>
+        public Author GetTestAuthor()
+        {
+            return CollectionsFactory.GetAuthorsCollection().First();
+        }
+
+        /// <summary>
+        /// Count the number of authors.
+        /// </summary>
+        /// <returns></returns>
+        public int CountAuthorsInCollection()
+        {
+            return CollectionsFactory.GetAuthorsCollection().Count();
+        }
     }
 }

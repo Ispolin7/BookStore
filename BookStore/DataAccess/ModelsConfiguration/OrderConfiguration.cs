@@ -1,5 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookStore.DataAccess.ModelsConfiguration
@@ -11,7 +12,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
             builder.ToTable("Orders");
             builder.Property(o => o.CustomerName).IsRequired().HasMaxLength(255);
             builder.Property(o => o.ExpectedDeliveryDate).IsRequired();
-            builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            builder.Property(b => b.CreatedAT).Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
         }
     }
 }

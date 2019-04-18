@@ -29,5 +29,13 @@ namespace BookStore.DataAccess.Models
         public bool SoftDeleted { get; set; }
         public DateTime CreatedAT { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+
+        //public void RestoreProperties(Book oldBook)
+        //{
+        //    this.SoftDeleted = oldBook.SoftDeleted;
+        //    this.CreatedAT = oldBook.CreatedAT;
+        //    this.UpdatedAt = DateTime.UtcNow;
+        //}
     }
 }

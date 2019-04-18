@@ -1,5 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookStore.DataAccess.ModelsConfiguration
@@ -13,7 +14,7 @@ namespace BookStore.DataAccess.ModelsConfiguration
             builder.Property(r => r.NumStars).IsRequired().HasMaxLength(2);
             builder.Property(r => r.Comment).IsRequired().HasMaxLength(1000);
             builder.Property(r => r.BookId).IsRequired();
-            builder.Property(b => b.CreatedAT).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            builder.Property(b => b.CreatedAT).Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
         }
     }
 }

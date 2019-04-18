@@ -17,7 +17,6 @@ namespace BookStore.Controllers.RequestModels
         public string Description { get; set; }
 
         [Required]
-        // TODO validation year
         [NotMoreCurrentYear]
         public int PublishedOn { get; set; }
 

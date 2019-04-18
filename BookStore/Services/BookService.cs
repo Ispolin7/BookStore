@@ -15,20 +15,23 @@ namespace BookStore.Services
     public class BookService : IBookService
     {
         private readonly BookStoreContext dbContext;
-        //private readonly DbSet<Book> books;
         private readonly IValidator<Book> bookValidator;
+        IValidator<BookAuthorsRequest> bookAuthorsValidator;
 
-        public BookService(BookStoreContext context, IValidator<Book> validator)
+        public BookService(
+            BookStoreContext context, 
+            IValidator<Book> bookValidator, 
+            IValidator<BookAuthorsRequest> bookAuthorsValidator)
         {
             this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
-            //this.books = dbContext.Set<Book>();
-            this.bookValidator = validator ?? throw new ArgumentNullException(nameof(bookValidator));
+            this.bookValidator = bookValidator ?? throw new ArgumentNullException(nameof(bookValidator));
+            this.bookAuthorsValidator = bookAuthorsValidator ?? throw new ArgumentNullException(nameof(bookAuthorsValidator));
         }
 
         /// <summary>
-        /// 
+        /// Get all not deleted models from DB.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>models collection</returns>
         public async Task<IEnumerable<Book>> AllAsync()
         {
             var collection = await this.dbContext.Books
@@ -43,10 +46,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get model's information from DB.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>model's information</returns>
         public async Task<Book> GetAsync(Guid id)
         {
             var book = await this.dbContext.Books
@@ -63,10 +66,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Add new model to DB.
         /// </summary>
         /// <param name="book"></param>
-        /// <returns></returns>
+        /// <returns>model's id</returns>
         public async Task<Guid> SaveAsync(Book book)
         {
             this.bookValidator.Validate(book).ThrowIfInvalid();
@@ -76,10 +79,10 @@ namespace BookStore.Services
         }        
 
         /// <summary>
-        /// 
+        /// Change softDelete model value
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>success</returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             var book = await this.dbContext.Books.FindAsync(id);
@@ -90,51 +93,39 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Change model's information in DB
         /// </summary>
         /// <param name="book"></param>
-        /// <returns></returns>
+        /// <returns>success</returns>
         public async Task<bool> UpdateAsync(Book book)
         {
             this.bookValidator.Validate(book).ThrowIfInvalid();
-
-            var oldBook = await this.dbContext.Books      
-                 .Where(a => a.Id == book.Id)
-                 .FirstOrDefaultAsync();
-
-            oldBook.Title = book.Title;
-            oldBook.Description = book.Description;
-            oldBook.PublishedOn = book.PublishedOn;
-            oldBook.Publisher = book.Publisher;
-            oldBook.OrgPrice = book.OrgPrice;
-            oldBook.ActualPrice = book.ActualPrice;
-            oldBook.PromotionalText = book.PromotionalText;
-            oldBook.ImageUrl = book.ImageUrl;
-            oldBook.UpdatedAt = DateTime.Now;
-
-            var result = this.dbContext.Books.Update(oldBook);
+            this.dbContext.Entry(book).State = EntityState.Modified;
+            //this.dbContext.Books.Update(book);
             await this.dbContext.SaveChangesAsync();
             return true;
         }
 
         /// <summary>
-        /// 
+        /// Change book's author collection
         /// </summary>
         /// <param name="bookAuthors"></param>
-        /// <returns></returns>
+        /// <returns>success</returns>
         public async Task<bool> UpdateAuthorsAsync(BookAuthorsRequest bookAuthors)
         {
+            this.bookAuthorsValidator.Validate(bookAuthors).ThrowIfInvalid();
+
             var oldAuthorsCollection =  await dbContext.Set<BookAuthor>()
                 .Where(ba => ba.BookId == bookAuthors.BookId)
                 .ToListAsync();
 
-            dbContext.Set<BookAuthor>().RemoveRange(oldAuthorsCollection);
+            this.dbContext.BookAuthors.RemoveRange(oldAuthorsCollection);
 
             var newAuthorsCollection = bookAuthors.AuthorsCollection.ToArray();
 
             for (int i = 0; i < newAuthorsCollection.Length; i++)
             {
-                await dbContext.Set<BookAuthor>().AddAsync(
+                await dbContext.BookAuthors.AddAsync(
                     new BookAuthor
                     {
                         BookId = bookAuthors.BookId,
@@ -148,10 +139,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Sort book's authors
         /// </summary>
         /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <returns>sorted collection</returns>
         public IEnumerable<Author> SortAutors(IEnumerable<BookAuthor> collection)
         {
             return collection.OrderBy(ba => ba.Order)
@@ -160,14 +151,18 @@ namespace BookStore.Services
                 .ToList();
         }
 
+        //TODO DiscountValidator
         /// <summary>
-        /// 
+        /// Change actual price
         /// </summary>
         /// <param name="discountModel"></param>
-        /// <returns></returns>
+        /// <returns>success</returns>
         public async Task<bool> UpdateDiscountAsync(DiscountRequest discountModel)
         {
-            var booksCollection = await this.dbContext.Books.Where(b => discountModel.BooksId.Contains(b.Id)).ToListAsync();
+            var booksCollection = await this.dbContext.Books
+                .Where(b => discountModel.BooksId.Contains(b.Id))
+                .ToListAsync();
+
             booksCollection.ForEach(b => b.ActualPrice = b.OrgPrice - (b.OrgPrice * discountModel.Discount / 100));
             this.dbContext.Books.UpdateRange(booksCollection);
             await this.dbContext.SaveChangesAsync();

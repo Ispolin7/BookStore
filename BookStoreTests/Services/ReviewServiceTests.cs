@@ -1,4 +1,6 @@
+using BookStore.Common;
 using BookStore.DataAccess;
+using BookStore.DataAccess.Models;
 using BookStore.Services;
 using BookStore.Services.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,10 +27,10 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task AllAsync_StateUnderTest_ExpectedBehavior()
+        public async Task AllAsync_GetAllReviews_ExpectedCorrectAmoint()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetReviewsCollection().Count();
+            var expectedCount = this.CountReviewsInCollection();
 
             // Act
             var result = await this.service.AllAsync();
@@ -39,10 +41,10 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task AllBookReviewsAsync_StateUnderTest_ExpectedBehavior()
+        public async Task AllBookReviewsAsync_GatAllBookReview_ExpectedNotNullCollection()
         {
             // Arrange
-            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            var testReview = this.GetTestReview();
 
             // Act
             var result = await this.service.AllBookReviewsAsync(testReview.BookId);
@@ -52,10 +54,10 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task GetAsync_StateUnderTest_ExpectedBehavior()
+        public async Task GetAsync_ReviewInformation_ExpectedNotNull()
         {
             // Arrange
-            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            var testReview = this.GetTestReview();
 
             // Act
             var result = await this.service.GetAsync(testReview.Id);
@@ -64,13 +66,12 @@ namespace BookStoreTests.Services
             Assert.IsNotNull(result);
         }
 
-        // TODO validation error
         [TestMethod]
-        public async Task SaveAsync_StateUnderTest_ExpectedBehavior()
+        public async Task SaveAsync_AddNewReviewInDb_ExpectedIncrementAmount()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetReviewsCollection().Count() + 1;
-            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            var expectedCount = this.CountReviewsInCollection() + 1;
+            var testReview = this.GetTestReview();
             testReview.Id = new Guid();
 
             // Act
@@ -83,11 +84,23 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        public async Task RemoveAsync_StateUnderTest_ExpectedBehavior()
+        [ExpectedException(typeof(ModelStateException))]
+        public async Task SaveAsync_AddNewReviewInDb_ExpectedValidationException()
+        {
+            // Arrange           
+            var testReview = this.GetTestReview();
+            testReview.BookId = new Guid();
+
+            // Act
+            await this.service.SaveAsync(testReview);
+        }
+
+        [TestMethod]
+        public async Task RemoveAsync_DeleteReviewInDb_ExpectedDecrementAmount()
         {
             // Arrange
-            var expectedCount = CollectionsFactory.GetReviewsCollection().Count() - 1;
-            var testAuthor = CollectionsFactory.GetReviewsCollection().First();
+            var expectedCount = this.CountReviewsInCollection() - 1;
+            var testAuthor = this.GetTestReview();
 
             // Act
             var result = await this.service.RemoveAsync(testAuthor.Id);
@@ -98,12 +111,11 @@ namespace BookStoreTests.Services
             Assert.AreEqual(newCount, expectedCount, $"Expected - {expectedCount}, real - {newCount}");
         }
 
-        // TODO validation error
         [TestMethod]
-        public async Task UpdateAsync_StateUnderTest_ExpectedBehavior()
+        public async Task UpdateAsync_UpdateReviewInformation_ExpectedSuccess()
         {
             // Arrange
-            var testReview = CollectionsFactory.GetReviewsCollection().First();
+            var testReview = this.GetTestReview();
             testReview.VoterName = "New Name";
 
             // Act
@@ -111,6 +123,24 @@ namespace BookStoreTests.Services
 
             // Assert
             Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Get Review instance for test.
+        /// </summary>
+        /// <returns>Review instance</returns>
+        public Review GetTestReview()
+        {
+            return CollectionsFactory.GetReviewsCollection().First();
+        }
+
+        /// <summary>
+        /// Count the number of reviews.
+        /// </summary>
+        /// <returns></returns>
+        public int CountReviewsInCollection()
+        {
+            return CollectionsFactory.GetReviewsCollection().Count();
         }
     }
 }

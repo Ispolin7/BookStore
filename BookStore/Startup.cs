@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BookStore.Common;
+using BookStore.Common.Extensions;
 using BookStore.Controllers.Filters;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
@@ -40,6 +42,7 @@ namespace BookStore
         {
             services.AddMvc().AddFluentValidation();
             services.AddAutoMapper();
+
             // Add DB Context.
             services.AddDbContext<BookStoreContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -69,23 +72,7 @@ namespace BookStore
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler(a => a.Run(async context =>
-                {
-                    // TODO add GlobalExceptionMiddleware
-                    var feature = context.Features.Get<IExceptionHandlerPathFeature>();
-                    var exception = feature.Error;
-
-                    var result = JsonConvert.SerializeObject(new
-                    {
-                        exception.Message,
-                        exception.Source,
-                        exception.StackTrace,
-                        exception.InnerException
-                    });
-                    context.Response.ContentType = "application/json";
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync(result);
-                }));
+                app.ConfigureExceptionHandler();                
             }
             else
             {

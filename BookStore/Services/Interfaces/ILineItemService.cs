@@ -10,6 +10,6 @@ namespace BookStore.Services.Interfaces
     {       
         Task<Order> CreateRangeAsync(Order order);
         Task<Order> UpdateRangeAsync(Order oldOrder, Order newOrder);
-        Task CalculateAllProperties(LineItem item, Guid id, DateTime createTime);
+        Task CalculateAllProperties(LineItem item);
     }
 }

@@ -1,5 +1,4 @@
-﻿using BookStore.Controllers.ViewModels;
-using BookStore.DataAccess;
+﻿using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +20,10 @@ namespace BookStore.Services
             this.authors = dbContext.Set<Author>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<Author>> AllAsync()
         {
             return await this.authors
@@ -29,6 +32,11 @@ namespace BookStore.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<Author> GetAsync(Guid id)
         {
             return await this.authors
@@ -38,6 +46,11 @@ namespace BookStore.Services
                 .FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns></returns>
         public async Task<Guid> SaveAsync(Author author)
         {
             await this.authors.AddAsync(author);
@@ -45,6 +58,11 @@ namespace BookStore.Services
             return author.Id;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             var author = await this.authors.FindAsync(id);
@@ -53,17 +71,14 @@ namespace BookStore.Services
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns></returns>
         public async Task<bool> UpdateAsync(Author author)
         {
-            var oldAuthor = await this.authors
-                //.AsNoTracking()
-                .Where(a => a.Id == author.Id)
-                .FirstOrDefaultAsync();
-
-            oldAuthor.Name = author.Name;
-            oldAuthor.UpdatedAt = DateTime.UtcNow;
-
-            var result = this.authors.Update(oldAuthor);
+            var result = this.authors.Update(author);
             await this.dbContext.SaveChangesAsync();
             return true;
         }
