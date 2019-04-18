@@ -16,16 +16,20 @@ namespace BookStore.Services
     {
         private readonly BookStoreContext dbContext;
         private readonly IValidator<Book> bookValidator;
-        IValidator<BookAuthorsRequest> bookAuthorsValidator;
+        private readonly IValidator<BookAuthorsRequest> bookAuthorsValidator;
+        private readonly IValidator<DiscountRequest> discountValidator;
 
         public BookService(
             BookStoreContext context, 
             IValidator<Book> bookValidator, 
-            IValidator<BookAuthorsRequest> bookAuthorsValidator)
+            IValidator<BookAuthorsRequest> bookAuthorsValidator,
+            IValidator<DiscountRequest> discountValidator
+            )
         {
             this.dbContext = context ?? throw new ArgumentNullException(nameof(context));
             this.bookValidator = bookValidator ?? throw new ArgumentNullException(nameof(bookValidator));
             this.bookAuthorsValidator = bookAuthorsValidator ?? throw new ArgumentNullException(nameof(bookAuthorsValidator));
+            this.discountValidator = discountValidator ?? throw new ArgumentNullException(nameof(discountValidator));
         }
 
         /// <summary>
@@ -152,7 +156,6 @@ namespace BookStore.Services
                 .ToList();
         }
 
-        //TODO DiscountValidator
         /// <summary>
         /// Change actual price
         /// </summary>
@@ -160,6 +163,8 @@ namespace BookStore.Services
         /// <returns>success</returns>
         public async Task<bool> UpdateDiscountAsync(DiscountRequest discountModel)
         {
+            this.discountValidator.Validate(discountModel).ThrowIfInvalid();
+
             var booksCollection = await this.dbContext.Books
                 .Where(b => discountModel.BooksId.Contains(b.Id))
                 .ToListAsync();

@@ -111,7 +111,5 @@ namespace BookStore.Controllers
             await service.UpdateDiscountAsync(discountModel);
             return NoContent();
         }
-       
-        // TODO BookController test class
     }
 }

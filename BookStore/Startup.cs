@@ -61,6 +61,7 @@ namespace BookStore
             services.AddScoped<IValidator<Order>, OrderValidator>();
             services.AddScoped<IValidator<Review>, ReviewValidator>();
             services.AddScoped<IValidator<BookAuthorsRequest>, BookAuthorValidator>();
+            services.AddScoped<IValidator<DiscountRequest>, DiscountValidator>();
 
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc(options =>

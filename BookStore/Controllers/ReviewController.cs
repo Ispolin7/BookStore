@@ -88,6 +88,5 @@ namespace BookStore.Controllers
             await this.service.RemoveAsync(id);
             return NoContent();
         }
-        // TODO ReviewController test class
     }
 }

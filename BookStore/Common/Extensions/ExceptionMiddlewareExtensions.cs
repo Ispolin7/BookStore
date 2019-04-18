@@ -21,7 +21,7 @@ namespace BookStore.Common.Extensions
                     result = JsonConvert.SerializeObject(new
                     {
                         Message = "Validation error",
-                        Result = errors.State.ToDictionary(e => e.Key, e => e.Value)
+                        Errors = errors.State.ToDictionary(e => e.Key, e => e.Value)
                     });
                 }
                 else
