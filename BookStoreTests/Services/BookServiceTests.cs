@@ -17,6 +17,7 @@ namespace BookStoreTests.Services
     {
         private BookService service;
 
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -62,7 +63,7 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ModelStateException))]
+        [ExpectedException(typeof(ValidationException))]
         public async Task SaveAsync_AddNewBookInDb_ExpectedValidationException()
         {
             // Arrange                 
@@ -102,7 +103,7 @@ namespace BookStoreTests.Services
         {
             // Arrange
             var testBook = this.GetTestBook();
-            testBook.Title = "New Book";
+            testBook.Title = "New Book Title";
 
             // Act
             var result = await this.service.UpdateAsync(testBook);

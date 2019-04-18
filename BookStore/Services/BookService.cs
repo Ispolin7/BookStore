@@ -100,6 +100,7 @@ namespace BookStore.Services
         public async Task<bool> UpdateAsync(Book book)
         {
             this.bookValidator.Validate(book).ThrowIfInvalid();
+            this.dbContext.Books.Attach(book);
             this.dbContext.Entry(book).State = EntityState.Modified;
             //this.dbContext.Books.Update(book);
             await this.dbContext.SaveChangesAsync();

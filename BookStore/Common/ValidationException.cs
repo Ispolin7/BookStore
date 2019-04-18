@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.Common
 {
-    public class ModelStateException : ApplicationException
+    public class ValidationException : Exception
     {
         public IEnumerable<KeyValuePair<string, string>> State { get; private set; }
 
-        public ModelStateException(IEnumerable<KeyValuePair<string, string>> state)
+        public ValidationException(IEnumerable<KeyValuePair<string, string>> state)
         {
             this.State = state;
         }
 
-        public ModelStateException(string propertyName, string message)
+        public ValidationException(string propertyName, string message)
         {
             this.State = new List<KeyValuePair<string, string>>()
             {
@@ -22,12 +20,12 @@ namespace BookStore.Common
             };
         }
 
-        public ModelStateException(string message)
+        public ValidationException(string message)
             : base(message)
         {
         }
 
-        public ModelStateException(string message, Exception inner)
+        public ValidationException(string message, Exception inner)
             : base(message, inner)
         {
         }

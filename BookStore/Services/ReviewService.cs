@@ -82,17 +82,17 @@ namespace BookStore.Services
             var validation = this.validator.Validate(review);
             validation.ThrowIfInvalid();
 
-            var oldReview = await this.reviews
-                 //.AsNoTracking()
-                 .Where(r => r.Id == review.Id)
-                 .FirstOrDefaultAsync();
+            //var oldReview = await this.reviews
+            //     //.AsNoTracking()
+            //     .Where(r => r.Id == review.Id)
+            //     .FirstOrDefaultAsync();
 
-            oldReview.VoterName = review.VoterName;
-            oldReview.NumStars = review.NumStars;
-            oldReview.Comment = review.Comment;
-            oldReview.UpdatedAt = DateTime.Now;
+            //oldReview.VoterName = review.VoterName;
+            //oldReview.NumStars = review.NumStars;
+            //oldReview.Comment = review.Comment;
+            //oldReview.UpdatedAt = DateTime.Now;
 
-            var result = this.reviews.Update(oldReview);
+            var result = this.reviews.Update(review);
             await this.dbContext.SaveChangesAsync();
             return true;
         }

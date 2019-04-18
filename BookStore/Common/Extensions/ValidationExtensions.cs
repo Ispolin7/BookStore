@@ -10,7 +10,7 @@ namespace BookStore.Common
         {
             if (result.IsValid == false)
             {
-                throw new ModelStateException(result.Errors.Select(x => new KeyValuePair<string, string>(x.PropertyName, x.ErrorMessage)));
+                throw new ValidationException(result.Errors.Select(x => new KeyValuePair<string, string>(x.PropertyName, x.ErrorMessage)).ToList());
             }
         }
     }

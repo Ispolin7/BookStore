@@ -61,12 +61,11 @@ namespace BookStore.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="author"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveAsync(Guid id)
+        public async Task<bool> UpdateAsync(Author author)
         {
-            var author = await this.authors.FindAsync(id);
-            this.authors.Remove(author);
+            var result = this.authors.Update(author);
             await this.dbContext.SaveChangesAsync();
             return true;
         }
@@ -74,11 +73,12 @@ namespace BookStore.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="author"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateAsync(Author author)
+        public async Task<bool> RemoveAsync(Guid id)
         {
-            var result = this.authors.Update(author);
+            var author = await this.authors.FindAsync(id);
+            this.authors.Remove(author);
             await this.dbContext.SaveChangesAsync();
             return true;
         }

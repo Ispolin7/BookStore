@@ -97,8 +97,6 @@ namespace BookStore.Services
                  .Include(o => o.LineItems)
                  .FirstOrDefaultAsync();
 
-            //oldOrder.CustomerName = order.CustomerName;
-            //oldOrder.UpdatedAt = DateTime.Now;
             var updatedOrder = await this.itemService.UpdateRangeAsync(oldOrder, order);
             var result = this.dbContext.Orders.Update(updatedOrder);
             await this.dbContext.SaveChangesAsync();

@@ -86,7 +86,7 @@ namespace BookStoreTests.Services
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ModelStateException))]
+        [ExpectedException(typeof(ValidationException))]
         public async Task SaveAsync_AddNewOrderToDb_ExpectedValidationException()
         {
             // Arrange     

@@ -6,6 +6,7 @@ using AutoMapper;
 using BookStore.Common;
 using BookStore.Common.Extensions;
 using BookStore.Controllers.Filters;
+using BookStore.Controllers.RequestModels;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services;
@@ -59,6 +60,7 @@ namespace BookStore
             services.AddScoped<IValidator<Book>, BookValidator>();
             services.AddScoped<IValidator<Order>, OrderValidator>();
             services.AddScoped<IValidator<Review>, ReviewValidator>();
+            services.AddScoped<IValidator<BookAuthorsRequest>, BookAuthorValidator>();
 
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc(options =>

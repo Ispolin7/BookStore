@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace BookStore.Common.Extensions
 {
@@ -12,15 +14,27 @@ namespace BookStore.Common.Extensions
             {
                 var feature = context.Features.Get<IExceptionHandlerPathFeature>();
                 var exception = feature.Error;
+                string result;
 
-                var result = new ErrorDetails
+                if (exception is ValidationException errors)
                 {
-                    StatusCode = 400,
-                    Message = exception.Message,
-                    //Source = exception.Source,
-                    //StackTrace = exception.StackTrace,
-                    //InnerException = exception.InnerException.Message
-                }.ToString();
+                    result = JsonConvert.SerializeObject(new
+                    {
+                        Message = "Validation error",
+                        Result = errors.State.ToDictionary(e => e.Key, e => e.Value)
+                    });
+                }
+                else
+                {
+                    result = new ErrorDetails(
+                        400,
+                        exception.Message,
+                        exception.Source ?? null,
+                        exception.StackTrace ?? null,
+                        exception.InnerException.Message ?? null
+                    ).ToString();
+                }
+
 
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 400;

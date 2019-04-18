@@ -10,6 +10,15 @@ namespace BookStore.Common
         public string StackTrace { get; set; }
         public string InnerException { get; set; }
 
+        public ErrorDetails(int code, string message, string source, string trace, string inner)
+        {
+            this.StatusCode = code;
+            this.Message = message;
+            this.Source = source;
+            this.StackTrace = trace;
+            this.InnerException = inner;
+        }
+
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);
