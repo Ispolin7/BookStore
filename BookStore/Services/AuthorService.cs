@@ -21,9 +21,9 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get all models from DB.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>models collection</returns>
         public async Task<IEnumerable<Author>> AllAsync()
         {
             return await this.authors
@@ -33,10 +33,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get model's information from DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>entity instance with relationships</returns>
         public async Task<Author> GetAsync(Guid id)
         {
             return await this.authors
@@ -47,10 +47,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Add new model to DB.
         /// </summary>
-        /// <param name="author"></param>
-        /// <returns></returns>
+        /// <param name="author">entity instance</param>
+        /// <returns>model's id</returns>
         public async Task<Guid> SaveAsync(Author author)
         {
             await this.authors.AddAsync(author);
@@ -59,10 +59,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Change entitity information in DB.
         /// </summary>
-        /// <param name="author"></param>
-        /// <returns></returns>
+        /// <param name="author">entity instance</param>
+        /// <returns>success</returns>
         public async Task<bool> UpdateAsync(Author author)
         {
             var result = this.authors.Update(author);
@@ -71,10 +71,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Delete entity in DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>success</returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             var author = await this.authors.FindAsync(id);

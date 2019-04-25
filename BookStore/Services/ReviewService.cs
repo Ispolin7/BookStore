@@ -25,16 +25,16 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get all models from DB.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>models collection</returns>
         public async Task<IEnumerable<Review>> AllAsync()
         {
             return await this.reviews.ToListAsync();
         }
 
         /// <summary>
-        /// 
+        /// Get model's information from DB.
         /// </summary>
         /// <param name="bookId"></param>
         /// <returns></returns>
@@ -48,8 +48,8 @@ namespace BookStore.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>entity instance with relationships</returns>
         public async Task<Review> GetAsync(Guid id)
         {
             return await this.reviews
@@ -58,10 +58,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Add new model to DB.
         /// </summary>
-        /// <param name="review"></param>
-        /// <returns></returns>
+        /// <param name="review">entity instance</param>
+        /// <returns>model's id</returns>
         public async Task<Guid> SaveAsync(Review review)
         {
             var validation = this.validator.Validate(review);
@@ -73,24 +73,13 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Change entitity information in DB.
         /// </summary>
-        /// <param name="review"></param>
-        /// <returns></returns>
+        /// <param name="review">entity instance</param>
+        /// <returns>success</returns>
         public async Task<bool> UpdateAsync(Review review)
         {
-            var validation = this.validator.Validate(review);
-            validation.ThrowIfInvalid();
-
-            //var oldReview = await this.reviews
-            //     //.AsNoTracking()
-            //     .Where(r => r.Id == review.Id)
-            //     .FirstOrDefaultAsync();
-
-            //oldReview.VoterName = review.VoterName;
-            //oldReview.NumStars = review.NumStars;
-            //oldReview.Comment = review.Comment;
-            //oldReview.UpdatedAt = DateTime.Now;
+            this.validator.Validate(review).ThrowIfInvalid();
 
             var result = this.reviews.Update(review);
             await this.dbContext.SaveChangesAsync();
@@ -98,10 +87,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Delete entity in DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>success</returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             var review = await this.reviews.FindAsync(id);

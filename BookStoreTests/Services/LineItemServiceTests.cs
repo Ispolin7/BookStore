@@ -47,7 +47,7 @@ namespace BookStoreTests.Services
             Assert.IsFalse(BookPricesCollection.Contains(0), "BookPrice collection contains 0 value");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public async Task UpdateRangeAsync_StateUnderTest_ExpectedBehavior()
         {
             // Arrange

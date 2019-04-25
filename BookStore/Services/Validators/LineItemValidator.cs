@@ -19,7 +19,7 @@ namespace BookStore.Services.Validators
         /// <summary>
         /// Check the presence of an entity in the database
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">book id</param>
         /// <returns></returns>
         private bool BookExists(Guid id)
         {

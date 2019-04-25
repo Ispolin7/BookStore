@@ -26,9 +26,9 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get all models from DB.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>models collection</returns>
         public async Task<IEnumerable<Order>> AllAsync()
         {
             return await this.dbContext.Orders
@@ -38,10 +38,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Get model's information from DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>entity instance with relationships</returns>
         public async Task<Order> GetAsync(Guid id)
         {
             return await this.dbContext.Orders
@@ -52,10 +52,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Add new model to DB.
         /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
+        /// <param name="order">entity instance</param>
+        /// <returns>model's id</returns>
         public async Task<Guid> SaveAsync(Order order)
         {
             this.orderValidator.Validate(order).ThrowIfInvalid();
@@ -71,10 +71,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Delete entity in DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">entity id</param>
+        /// <returns>success</returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             var order = await this.dbContext.Orders.FindAsync(id);
@@ -84,10 +84,10 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// 
+        /// Change entitity information in DB.
         /// </summary>
-        /// <param name="order"></param>
-        /// <returns></returns>
+        /// <param name="order">entity instance</param>
+        /// <returns>success</returns>
         public async Task<bool> UpdateAsync(Order order)
         {
             this.orderValidator.Validate(order).ThrowIfInvalid();

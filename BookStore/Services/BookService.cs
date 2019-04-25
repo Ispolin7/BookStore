@@ -52,8 +52,8 @@ namespace BookStore.Services
         /// <summary>
         /// Get model's information from DB.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>model's information</returns>
+        /// <param name="id">entity id</param>
+        /// <returns>entity instance with relationships/returns>
         public async Task<Book> GetAsync(Guid id)
         {
             var book = await this.dbContext.Books
@@ -72,7 +72,7 @@ namespace BookStore.Services
         /// <summary>
         /// Add new model to DB.
         /// </summary>
-        /// <param name="book"></param>
+        /// <param name="book">entity instance</param>
         /// <returns>model's id</returns>
         public async Task<Guid> SaveAsync(Book book)
         {
@@ -83,7 +83,7 @@ namespace BookStore.Services
         }        
 
         /// <summary>
-        /// Change softDelete model value
+        /// Change softDelete model value.
         /// </summary>
         /// <param name="id"></param>
         /// <returns>success</returns>
@@ -97,7 +97,7 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// Change model's information in DB
+        /// Change entitity information in DB.
         /// </summary>
         /// <param name="book"></param>
         /// <returns>success</returns>
@@ -112,9 +112,9 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// Change book's author collection
+        /// Change book's author collection.
         /// </summary>
-        /// <param name="bookAuthors"></param>
+        /// <param name="bookAuthors">entity instance</param>
         /// <returns>success</returns>
         public async Task<bool> UpdateAuthorsAsync(BookAuthorsRequest bookAuthors)
         {
@@ -144,7 +144,7 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// Sort book's authors
+        /// Sort book's authors.
         /// </summary>
         /// <param name="collection"></param>
         /// <returns>sorted collection</returns>
@@ -157,7 +157,7 @@ namespace BookStore.Services
         }
 
         /// <summary>
-        /// Change actual price
+        /// Change actual price.
         /// </summary>
         /// <param name="discountModel"></param>
         /// <returns>success</returns>
