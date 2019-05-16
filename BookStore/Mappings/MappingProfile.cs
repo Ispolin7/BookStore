@@ -2,6 +2,7 @@
 using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Linq;
 
 namespace BookStore.Mappings
@@ -25,6 +26,10 @@ namespace BookStore.Mappings
             CreateMap<Order, OrderViewModel>()
                 .ForMember(v => v.DateOrderredUtc, opt => opt.MapFrom(x => x.CreatedAT.ToString()));
             CreateMap<Review, ReviewViewModel>();
+
+            CreateMap<LoginUserRequest, IdentityUser>();
+            CreateMap<RegisterUserRequest, IdentityUser>()
+                .ForMember(i => i.UserName, opt => opt.MapFrom(r => r.FirstName + r.LastName));
         }
     }
 }

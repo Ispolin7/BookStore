@@ -1,5 +1,6 @@
 ﻿using BookStore.DataAccess.Models;
 using BookStore.DataAccess.ModelsConfiguration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.DataAccess
 {
-    public class BookStoreContext : DbContext
+    public class BookStoreContext : IdentityDbContext
     {
         public BookStoreContext(DbContextOptions<BookStoreContext> options)
             : base(options) { }
@@ -23,6 +24,8 @@ namespace BookStore.DataAccess
 
             // Add in db test values.
             modelBuilder.Seed();
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Author> Authors { get; set; }

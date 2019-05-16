@@ -63,8 +63,8 @@ namespace BookStore.Controllers
         /// <summary>
         /// Update the specified resource in storage.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="author"></param>
+        /// <param name="id">Guid author id</param>
+        /// <param name="author">AuthorRequest</param>
         /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
         public async Task<IActionResult> PutAuthorAsync([FromRoute] Guid id, [FromBody] AuthorRequest author)

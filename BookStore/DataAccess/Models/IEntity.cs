@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.DataAccess.Models
 {
-    interface IEntity
+    public interface IEntity
     {
         Guid Id { get; set; }
         //bool Deleted { get; set; }

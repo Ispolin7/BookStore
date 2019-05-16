@@ -1,4 +1,5 @@
 ﻿using BookStore.Common;
+using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
@@ -102,6 +103,11 @@ namespace BookStore.Services
             await this.dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public Task<PaginateModel> PaginateAsync(int page, int count)
+        {
+            throw new NotImplementedException();
         }
     }
 }

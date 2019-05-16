@@ -1,8 +1,10 @@
 ﻿using BookStore.Common;
 using BookStore.Controllers.RequestModels;
+using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using BookStore.Services.Models;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -48,6 +50,28 @@ namespace BookStore.Services
             collection.ForEach(b => b.Authors = this.SortAutors(b.BookAuthors));
             return collection;
         }
+
+        /// <summary>
+        /// TODO comment
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="count"></param>
+        ///// <returns></returns>
+        //public async Task<PaginateModel> PaginateAsync(int page, int count)
+        //{
+        //    var booksCount = await this.dbContext.Books.CountAsync();
+        //    var books = await this.dbContext.Books
+        //        .AsNoTracking()
+        //        .Skip((page - 1) * count)
+        //        .Take(count)
+        //        .Include(b => b.BookAuthors)
+        //            .ThenInclude(ba => ba.Author)
+        //        .ToListAsync();
+
+        //    var pageInfo = new PageInfo(page, books.Count, booksCount);
+
+        //    return new PaginateModel(books, pageInfo);
+        //}
 
         /// <summary>
         /// Get model's information from DB.

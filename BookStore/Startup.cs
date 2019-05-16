@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using BookStore.Common;
+﻿using AutoMapper;
 using BookStore.Common.Extensions;
 using BookStore.Controllers.Filters;
 using BookStore.Controllers.RequestModels;
 using BookStore.DataAccess;
 using BookStore.DataAccess.Models;
 using BookStore.Services;
+using BookStore.Services.Auth;
 using BookStore.Services.Interfaces;
+using BookStore.Services.Services;
 using BookStore.Services.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace BookStore
 {
@@ -44,9 +36,20 @@ namespace BookStore
             services.AddMvc().AddFluentValidation();
             services.AddAutoMapper();
 
-            // Add DB Context.
+            // Add DB Contexts.
             services.AddDbContext<BookStoreContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 7;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;               
+            })
+                .AddEntityFrameworkStores<BookStoreContext>()
+                .AddDefaultTokenProviders();
 
             // Add services.
             services.AddScoped<IAuthorService, AuthorService>();
@@ -54,6 +57,7 @@ namespace BookStore
             services.AddScoped<ILineItemService, LineItemService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             // Add Validators.
             services.AddScoped<IValidator<Author>, AuthorValidator>();
@@ -62,6 +66,18 @@ namespace BookStore
             services.AddScoped<IValidator<Review>, ReviewValidator>();
             services.AddScoped<IValidator<BookAuthorsRequest>, BookAuthorValidator>();
             services.AddScoped<IValidator<DiscountRequest>, DiscountValidator>();
+
+            // Add Authentication
+            services.AddAuthentication(o =>
+                {
+                    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new JWTValidationParameters();
+                    });
 
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc(options =>
@@ -82,7 +98,7 @@ namespace BookStore
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

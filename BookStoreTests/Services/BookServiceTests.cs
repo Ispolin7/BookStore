@@ -33,7 +33,7 @@ namespace BookStoreTests.Services
                 new BookValidator(), 
                 new BookAuthorValidator(context),
                 new DiscountValidator(context)
-                );
+            );
         }
 
         [TestMethod]
