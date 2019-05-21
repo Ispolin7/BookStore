@@ -37,6 +37,7 @@ namespace BookStore.Services.Services
             var result = await userManger.CreateAsync(user, password);
             result.CheckResult();
 
+            //TODO add to seeds
             if (!await roleManger.RoleExistsAsync(userRole))
             {
                 await roleManger.CreateAsync(new IdentityRole(userRole));
