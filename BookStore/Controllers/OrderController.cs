@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BookStore.Controllers.Filters;
 using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -28,6 +30,7 @@ namespace BookStore.Controllers
         /// </summary>
         /// <returns>Order collection</returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrdersAsync()
         {
             var collection = await service.AllAsync();
@@ -41,6 +44,7 @@ namespace BookStore.Controllers
         /// <param name="id"></param>
         /// <returns>Order information</returns>
         [HttpGet("{id:Guid}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetOrderAsync([FromRoute] Guid id)
         {
             var order = await service.GetAsync(id);
@@ -54,6 +58,8 @@ namespace BookStore.Controllers
         /// <param name="order"></param>
         /// <returns>status code</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateModelState]
         public async Task<IActionResult> PostOrderAsync([FromBody] OrderRequest order)
         {
             var result = await service.SaveAsync(mapper.Map<Order>(order));
@@ -68,6 +74,8 @@ namespace BookStore.Controllers
         /// <param name="order"></param>
         /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateModelState]
         public async Task<IActionResult> PutOrderAsync([FromRoute] Guid id, [FromBody] OrderRequest order)
         {
             order.Id = id;
@@ -81,6 +89,7 @@ namespace BookStore.Controllers
         /// <param name="id"></param>
         /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteOrderAsync([FromRoute] Guid id)
         {
             await this.service.RemoveAsync(id);
