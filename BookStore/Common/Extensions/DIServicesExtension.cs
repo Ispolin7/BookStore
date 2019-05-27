@@ -24,6 +24,7 @@ namespace BookStore.Common.Extensions
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IRoleService, RoleService>();
 
             return services;
         }
