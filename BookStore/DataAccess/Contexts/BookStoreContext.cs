@@ -22,10 +22,10 @@ namespace BookStore.DataAccess
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
 
+            base.OnModelCreating(modelBuilder);
+
             // Add in db test values.
             modelBuilder.Seed();
-
-            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Author> Authors { get; set; }
@@ -40,7 +40,6 @@ namespace BookStore.DataAccess
             foreach (var entry in this.ChangeTracker.Entries<IEntity>())
             {
                 var currentDate = DateTime.UtcNow;
-                //var userId = this._currentUserService.CurrentUserId;
 
                 switch (entry.State)
                 {
@@ -50,7 +49,6 @@ namespace BookStore.DataAccess
 
                         break;
                     case EntityState.Modified:
-                        //entry.Entity.CreatedAT.
                         entry.Entity.UpdatedAt = currentDate;
 
                         break;
@@ -65,52 +63,5 @@ namespace BookStore.DataAccess
                 ? base.SaveChangesAsync(cancellationToken.Value)
                 : base.SaveChangesAsync());
         }
-
-
-        //public async Task<int> SaveChangesAsync(CancellationToken? cancellationToken = null)
-        //{
-        //    foreach (var entry in this.ChangeTracker.Entries<IAuditEntity>())
-        //    {
-        //        var currentDate = this._clock.UtcNow;
-        //        var userId = this._currentUserService.CurrentUserId;
-
-        //        switch (entry.State)
-        //        {
-        //            case EntityState.Added:
-        //                entry.Entity.CreatedBy = userId;
-        //                entry.Entity.CreatedOn = currentDate;
-
-        //                entry.Entity.ModifiedBy = userId;
-        //                entry.Entity.ModifiedOn = currentDate;
-
-        //                break;
-        //            case EntityState.Modified:
-        //                entry.Entity.ModifiedBy = userId;
-        //                entry.Entity.ModifiedOn = currentDate;
-
-        //                break;
-        //            case EntityState.Unchanged:
-        //            case EntityState.Detached:
-        //            case EntityState.Deleted:
-        //                break;
-        //        }
-        //    }
-
-        //    return await (cancellationToken.HasValue
-        //        ? base.SaveChangesAsync(cancellationToken.Value)
-        //        : base.SaveChangesAsync());
-        //}
-
-        //public void Delete<T>(T entity, bool permanently = false) where T : class, IEntity
-        //{
-        //    if (!typeof(IAuditEntity).IsAssignableFrom(typeof(T)) || permanently)
-        //    {
-        //        this.Set<T>().Remove(entity);
-        //        return;
-        //    }
-
-        //    ((IAuditEntity)entity).DeletedOn = this._clock.UtcNow;
-        //    this.Update(entity);
-        //}
     }
 }

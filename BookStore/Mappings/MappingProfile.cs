@@ -30,7 +30,6 @@ namespace BookStore.Mappings
             CreateMap<LoginUserRequest, IdentityUser>();
             CreateMap<RegisterUserRequest, IdentityUser>()
                 .ForMember(i => i.UserName, opt => opt.MapFrom(r => r.FirstName + r.LastName));
-            //CreateMap<RoleRequest, IdentityRole>();
         }
     }
 }

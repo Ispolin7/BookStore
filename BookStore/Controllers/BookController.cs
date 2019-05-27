@@ -31,7 +31,6 @@ namespace BookStore.Controllers
         /// <returns>Books collection</returns>
         [HttpGet]
         //[Pagination]
-        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetbooksAsync()
         {
             var collection = await service.AllAsync();
@@ -74,6 +73,7 @@ namespace BookStore.Controllers
         /// <param name="book"></param>
         /// <returns>status code</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<IActionResult> PostBookAsync([FromBody] BookRequest book)
         {           
@@ -88,6 +88,7 @@ namespace BookStore.Controllers
         /// <param name="book"></param>
         /// <returns>status code</returns>
         [HttpPut("{Id:Guid}")]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<IActionResult> PutBookAsync([FromRoute] Guid Id, [FromBody] BookRequest book)
         {
@@ -102,6 +103,7 @@ namespace BookStore.Controllers
         /// <param name="id"></param>
         /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBookAsync([FromRoute] Guid id)
         {            
             await this.service.RemoveAsync(id);
@@ -115,6 +117,7 @@ namespace BookStore.Controllers
         /// <param name="bookAuthors"></param>
         /// <returns>status code</returns>
         [HttpPut("{id:Guid}/authors")]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<IActionResult> UpdateAuthorsAsync([FromRoute] Guid id, [FromBody] BookAuthorsRequest bookAuthors)
         {
@@ -129,6 +132,7 @@ namespace BookStore.Controllers
         /// <param name="discountModel"></param>
         /// <returns>status code</returns>
         [HttpPut("discount")]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<IActionResult> ChangeDiscountAsync([FromBody] DiscountRequest discountModel)
         {

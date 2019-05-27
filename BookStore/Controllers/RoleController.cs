@@ -2,6 +2,7 @@
 using BookStore.Controllers.Filters;
 using BookStore.Controllers.RequestModels;
 using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +23,7 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ActionResult GetAll()
         {
             var roles = this.roleService.GetAllRolesAsync();
@@ -29,6 +31,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<ActionResult> AddAsync([FromBody] RoleRequest newRole)
         {
@@ -38,6 +41,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPut("{id:Guid}")]
+        [Authorize(Roles = "Admin")]
         [ValidateModelState]
         public async Task<ActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] RoleRequest role)
         {
@@ -47,6 +51,7 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteAsync([FromRoute] Guid id)
         {
             await this.roleService.DeleteRoleAsync(id);

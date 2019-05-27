@@ -1,4 +1,5 @@
 ﻿using BookStore.DataAccess.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,87 @@ namespace BookStore.DataAccess
 {
     public static class CollectionsFactory
     {
+        public static IEnumerable<IdentityRole> GetRoles()
+        {
+            return new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Id = "39fed276-428e-443b-87bc-2189a12d0a48",
+                    Name = "User",
+                    NormalizedName = "USER",
+                    ConcurrencyStamp = "df15def4-d452-4e9c-906e-8d135705cf75"
+                },
+                new IdentityRole
+                {
+                    Id = "84536517-dbb4-46b1-96a0-0b4225090c5",
+                    Name = "Admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = "39640d3c-b761-4bf0-93a2-fa69fd8235bb"
+                }
+            };
+        }
+
+        public static IEnumerable<IdentityUser> GetUsers()
+        {
+            return new List<IdentityUser>
+            {
+                new IdentityUser
+                {
+                    Id = "4fbbea10-a2e2-4849-bc5a-c2b3cbec400a",
+                    UserName = "Admin",
+                    NormalizedUserName = "ADMIN",
+                    Email = "admin@mail.com",
+                    NormalizedEmail = "ADMIN@MAIL.COM",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEON7jD3hW2E6XqqX2QsqnWWtGcIaUw+7z9cMfmVFwzcZwUO4ybLncUMXkTip6bDr+w==", //Password7
+                    SecurityStamp = "5OIXSUF7WQ3OJQDKL6EDICRGYPX2V2HP",
+                    ConcurrencyStamp = "d9d4cf88-76f6-4f1b-957e-12399f67458a",
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                },
+                new IdentityUser
+                {
+                    Id = "cce03b17-69d6-4af2-bb36-f730d1a04ba3",
+                    UserName = "User",
+                    NormalizedUserName = "USER",
+                    Email = "user@mail.com",
+                    NormalizedEmail = "USER@MAIL.COM",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEON7jD3hW2E6XqqX2QsqnWWtGcIaUw+7z9cMfmVFwzcZwUO4ybLncUMXkTip6bDr+w==", //Password7
+                    SecurityStamp = "CE3LFFFIVOUMY4QVEVKSVVSC57WCIPUF",
+                    ConcurrencyStamp = "145a115e-413f-4477-882b-6649f7f99ab6",
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                }
+            };
+        }
+
+        public static IEnumerable<IdentityUserRole<string>> GetUserRole()
+        {
+            return new List<IdentityUserRole<string>>
+            {
+                new IdentityUserRole<string>
+                {
+                    UserId = "4fbbea10-a2e2-4849-bc5a-c2b3cbec400a",
+                    RoleId = "84536517-dbb4-46b1-96a0-0b4225090c5"
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = "cce03b17-69d6-4af2-bb36-f730d1a04ba3",
+                    RoleId = "39fed276-428e-443b-87bc-2189a12d0a48"
+                }
+            };
+        }
+
         public static IEnumerable<Author> GetAuthorsCollection()
         {
             return new List<Author>

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BookStore.Controllers.Filters;
 using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -56,6 +58,8 @@ namespace BookStore.Controllers
         /// <param name="review"></param>
         /// <returns>status code</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateModelState]
         public async Task<IActionResult> PostReviewAsync([FromRoute] Guid bookId, [FromBody] ReviewRequest review)
         {
             review.BookId = bookId;
@@ -70,6 +74,8 @@ namespace BookStore.Controllers
         /// <param name="review"></param>
         /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateModelState]
         public async Task<IActionResult> PutReviewAsync([FromRoute] Guid id, [FromBody] ReviewRequest review)
         {
             review.Id = id;
@@ -83,6 +89,7 @@ namespace BookStore.Controllers
         /// <param name="id"></param>
         /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteReviewAsync([FromRoute] Guid id)
         {
             await this.service.RemoveAsync(id);

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BookStore.Controllers.Filters;
 using BookStore.Controllers.RequestModels;
 using BookStore.Controllers.ViewModels;
 using BookStore.DataAccess.Models;
 using BookStore.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -54,6 +56,8 @@ namespace BookStore.Controllers
         /// <param name="author"></param>
         /// <returns>status code</returns>
         [HttpPost]
+        [ValidateModelState]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostAuthorAsync([FromBody] AuthorRequest author)
         {
             var id = await service.SaveAsync(mapper.Map<Author>(author));
@@ -67,6 +71,8 @@ namespace BookStore.Controllers
         /// <param name="author">AuthorRequest</param>
         /// <returns>status code</returns>
         [HttpPut("{id:Guid}")]
+        [ValidateModelState]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutAuthorAsync([FromRoute] Guid id, [FromBody] AuthorRequest author)
         {
             author.Id = id;
@@ -80,6 +86,8 @@ namespace BookStore.Controllers
         /// <param name="id"></param>
         /// <returns>status code</returns>
         [HttpDelete("{id:Guid}")]
+        [ValidateModelState]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAuthorAsync([FromRoute] Guid id)
         {          
             await this.service.RemoveAsync(id);
